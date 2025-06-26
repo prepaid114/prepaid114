@@ -842,25 +842,25 @@ class VocabularyQuiz {
         
         // 도전장 타이틀
         ctx.fillStyle = '#e74c3c';
-        ctx.font = 'bold 52px "Segoe UI", sans-serif';
+        ctx.font = 'bold 52px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('🎯 도전장! 🎯', canvas.width / 2, 180);
         
         // 테마 정보
-        ctx.font = '60px "Segoe UI", sans-serif';
+        ctx.font = '60px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#2c3e50';
         ctx.fillText(themeIcon, canvas.width / 2, 280);
         
-        ctx.font = 'bold 32px "Segoe UI", sans-serif';
+        ctx.font = 'bold 32px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText(challenge.themeName, canvas.width / 2, 330);
         
         // 도전 메시지
-        ctx.font = 'bold 28px "Segoe UI", sans-serif';
+        ctx.font = 'bold 28px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#666';
         ctx.fillText('이 점수를 넘어보세요!', canvas.width / 2, 400);
         
         // 목표 점수
-        ctx.font = 'bold 100px "Segoe UI", sans-serif';
+        ctx.font = 'bold 100px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = themeColors.accent;
         ctx.fillText(`${challenge.targetScore}점`, canvas.width / 2, 520);
         
@@ -870,14 +870,14 @@ class VocabularyQuiz {
         ctx.fill();
         
         ctx.fillStyle = 'white';
-        ctx.font = 'bold 28px "Segoe UI", sans-serif';
+        ctx.font = 'bold 28px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText('도전하기!', canvas.width / 2, 600);
         
         // 앱 정보
-        ctx.font = '24px "Segoe UI", sans-serif';
+        ctx.font = '24px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#999';
         ctx.fillText('영어 단어 마스터', canvas.width / 2, 680);
-        ctx.font = '20px "Segoe UI", sans-serif';
+        ctx.font = '20px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText('prepaid114.github.io/prepaid114', canvas.width / 2, 720);
         
         return new Promise(resolve => {
@@ -962,8 +962,29 @@ class VocabularyQuiz {
     
     // Score Card Image Generation
     async generateScoreCard(score, accuracy, themeName) {
+        // Ensure roundRect polyfill is available
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+        
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+            throw new Error('Canvas 2D context not supported');
+        }
         
         // Canvas 크기 설정 (Instagram Square format)
         canvas.width = 800;
@@ -994,24 +1015,24 @@ class VocabularyQuiz {
         
         // 제목
         ctx.fillStyle = '#2c3e50';
-        ctx.font = 'bold 48px "Segoe UI", sans-serif';
+        ctx.font = 'bold 48px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('🎯 영어 단어 마스터', canvas.width / 2, 200);
         
         // 테마 아이콘 및 이름
-        ctx.font = '80px "Segoe UI", sans-serif';
+        ctx.font = '80px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText(themeIcon, canvas.width / 2, 320);
         
-        ctx.font = 'bold 36px "Segoe UI", sans-serif';
+        ctx.font = 'bold 36px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText(themeName, canvas.width / 2, 380);
         
         // 점수 (메인)
-        ctx.font = 'bold 120px "Segoe UI", sans-serif';
+        ctx.font = 'bold 120px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = themeColors.accent;
         ctx.fillText(`${score}점`, canvas.width / 2, 520);
         
         // 정답률
-        ctx.font = 'bold 32px "Segoe UI", sans-serif';
+        ctx.font = 'bold 32px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#666';
         ctx.fillText(`정답률 ${accuracy}%`, canvas.width / 2, 580);
         
@@ -1034,12 +1055,12 @@ class VocabularyQuiz {
         // 완료 시간
         const now = new Date();
         const dateString = now.toLocaleDateString('ko-KR');
-        ctx.font = '24px "Segoe UI", sans-serif';
+        ctx.font = '24px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#999';
         ctx.fillText(`${dateString} 완료`, canvas.width / 2, 680);
         
         // URL
-        ctx.font = '20px "Segoe UI", sans-serif';
+        ctx.font = '20px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText('prepaid114.github.io/prepaid114', canvas.width / 2, 720);
         
         // Canvas to Blob
@@ -1070,25 +1091,6 @@ class VocabularyQuiz {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    }
-    
-    // Canvas roundRect polyfill for older browsers
-    initCanvasRoundRect() {
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
-                this.beginPath();
-                this.moveTo(x + radius, y);
-                this.lineTo(x + width - radius, y);
-                this.quadraticCurveTo(x + width, y, x + width, y + radius);
-                this.lineTo(x + width, y + height - radius);
-                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-                this.lineTo(x + radius, y + height);
-                this.quadraticCurveTo(x, y + height, x, y + height - radius);
-                this.lineTo(x, y + radius);
-                this.quadraticCurveTo(x, y, x + radius, y);
-                this.closePath();
-            };
-        }
     }
     
     // Challenge System
@@ -1373,29 +1375,29 @@ class VocabularyQuiz {
         ctx.fill();
         
         // 결과 아이콘 및 제목
-        ctx.font = '80px "Segoe UI", sans-serif';
+        ctx.font = '80px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(success ? '🏆' : '😅', canvas.width / 2, 180);
         
         ctx.fillStyle = success ? '#27ae60' : '#e74c3c';
-        ctx.font = 'bold 42px "Segoe UI", sans-serif';
+        ctx.font = 'bold 42px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText(success ? '도전 성공!' : '도전 실패', canvas.width / 2, 240);
         
         // 테마 정보
-        ctx.font = '40px "Segoe UI", sans-serif';
+        ctx.font = '40px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#2c3e50';
         ctx.fillText(themeIcon, canvas.width / 2, 310);
         
-        ctx.font = 'bold 28px "Segoe UI", sans-serif';
+        ctx.font = 'bold 28px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText(this.currentChallenge.themeName, canvas.width / 2, 350);
         
         // 점수 비교
-        ctx.font = 'bold 24px "Segoe UI", sans-serif';
+        ctx.font = 'bold 24px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#666';
         ctx.fillText('목표', 250, 420);
         ctx.fillText('내 결과', 550, 420);
         
-        ctx.font = 'bold 60px "Segoe UI", sans-serif';
+        ctx.font = 'bold 60px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#999';
         ctx.fillText(`${this.currentChallenge.targetScore}점`, 250, 480);
         
@@ -1403,21 +1405,21 @@ class VocabularyQuiz {
         ctx.fillText(`${myScore}점`, 550, 480);
         
         // VS
-        ctx.font = 'bold 32px "Segoe UI", sans-serif';
+        ctx.font = 'bold 32px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#333';
         ctx.fillText('VS', canvas.width / 2, 465);
         
         // 결과 메시지
-        ctx.font = 'bold 24px "Segoe UI", sans-serif';
+        ctx.font = 'bold 24px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#666';
         const message = success ? '목표를 넘어 도전에 성공했어요!' : '아쉽지만 다음 기회에! 💪';
         ctx.fillText(message, canvas.width / 2, 560);
         
         // 앱 정보
-        ctx.font = '24px "Segoe UI", sans-serif';
+        ctx.font = '24px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillStyle = '#999';
         ctx.fillText('영어 단어 마스터', canvas.width / 2, 650);
-        ctx.font = '20px "Segoe UI", sans-serif';
+        ctx.font = '20px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
         ctx.fillText('prepaid114.github.io/prepaid114', canvas.width / 2, 690);
         
         return new Promise(resolve => {
@@ -1711,6 +1713,7 @@ class VocabularyQuiz {
         
         if (this.currentWordIndex === null) {
             // Theme completed
+            this.showCompletionModal();
             return;
         }
         
