@@ -685,14 +685,23 @@ class VocabularyQuiz {
             // Generate score card image
             const imageBlob = await this.generateScoreCard(score, accuracy, themeName);
             
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([imageBlob], 'score.png', { type: 'image/png' })] })) {
-                // Share with image (supported on mobile)
-                const file = new File([imageBlob], 'english-master-score.png', { type: 'image/png' });
-                await navigator.share({
-                    title: '🎯 영어 단어 마스터 - 점수 공유',
-                    text: `${themeName} 테마에서 ${score}점을 달성했어요! 🎉`,
-                    files: [file]
-                });
+            if (navigator.share && navigator.canShare) {
+                const testFile = new File([imageBlob], 'score.png', { type: 'image/png' });
+                const canShareFiles = navigator.canShare({ files: [testFile] });
+                
+                if (canShareFiles) {
+                    // Share with image (supported on mobile)
+                    const file = new File([imageBlob], 'english-master-score.png', { type: 'image/png' });
+                    await navigator.share({
+                        title: '🎯 영어 단어 마스터 - 점수 공유',
+                        text: `${themeName} 테마에서 ${score}점을 달성했어요! 🎉`,
+                        files: [file]
+                    });
+                } else {
+                    // Fallback: download image and show share text
+                    this.downloadScoreCard(imageBlob, `영어단어마스터_${themeName}_${score}점.png`);
+                    this.showToast('📸 점수 카드가 다운로드되었습니다!\n이미지를 SNS에 올려보세요!');
+                }
             } else {
                 // Fallback: download image and show share text
                 this.downloadScoreCard(imageBlob, `영어단어마스터_${themeName}_${score}점.png`);
