@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영어 단어 학습 툴</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎯 영어 단어 마스터</h1>
+            <div class="version-badge">v3.3.0</div>
+            <div class="score-board">
+                <div class="score-item">
+                    <span class="score-label">점수</span>
+                    <span class="score-value" id="score">0</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-label">정답률</span>
+                    <span class="score-value" id="accuracy">0%</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="theme-selector" id="themeSelector">
+            <div class="selector-header">
+                <h2>📚 테마를 선택하세요</h2>
+                <button class="stats-btn" id="statsBtn">📊 학습 통계</button>
+            </div>
+            <div class="theme-grid" id="themeGrid">
+                <!-- Themes will be populated by JavaScript -->
+                <noscript>
+                    <div style="color: red; text-align: center; padding: 20px;">
+                        JavaScript가 비활성화되어 있습니다. 앱을 사용하려면 JavaScript를 활성화해주세요.
+                    </div>
+                </noscript>
+            </div>
+        </div>
+
+        <!-- Learning Statistics Dashboard -->
+        <div class="stats-dashboard" id="statsDashboard" style="display: none;">
+            <div class="dashboard-header">
+                <h2>📊 학습 통계 대시보드</h2>
+                <button class="close-stats-btn" id="closeStatsBtn">✕</button>
+            </div>
+            
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="learningStreak">0</div>
+                        <div class="stat-label">연속 학습일</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="totalWordsLearned">0</div>
+                        <div class="stat-label">학습한 단어</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="totalStudyTime">0분</div>
+                        <div class="stat-label">총 학습시간</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="averageScore">0</div>
+                        <div class="stat-label">평균 점수</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-stats">
+                <h3>테마별 상세 통계</h3>
+                <div class="theme-stats-grid" id="themeStatsGrid">
+                    <!-- Theme statistics will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="review-stats">
+                <h3>복습 현황</h3>
+                <div class="review-summary" id="reviewSummary">
+                    <!-- Review statistics will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="social-features">
+                <h3>소셜 기능</h3>
+                <div class="social-buttons">
+                    <button class="social-btn share-stats" id="shareStatsBtn">
+                        📊 학습 통계 공유하기
+                    </button>
+                    <button class="social-btn challenge-friends" id="challengeFriendsBtn">
+                        🎯 친구에게 도전장 보내기
+                    </button>
+                    <button class="social-btn copy-link" id="copyLinkBtn">
+                        🔗 앱 링크 복사하기
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <main class="main-content" id="mainContent" style="display: none;">
+            <div class="current-theme">
+                <span class="theme-label" id="currentTheme">현재 테마</span>
+                <div class="theme-controls">
+                    <button class="change-theme-btn" id="changeThemeBtn">테마 변경</button>
+                    <div class="auto-advance-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoAdvanceToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">자동 진행</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="word-card" id="wordCard">
+                <div class="word-display">
+                    <div class="word-header">
+                        <h2 class="word" id="currentWord">단어를 불러오는 중...</h2>
+                        <button class="pronunciation-btn" id="pronunciationBtn" title="발음 듣기">
+                            🔊
+                        </button>
+                    </div>
+                    <p class="word-type" id="wordType">품사</p>
+                </div>
+            </div>
+
+            <div class="choices-section" id="choicesSection">
+                <div class="choice-item" data-choice="0">
+                    <span class="choice-letter">A</span>
+                    <span class="choice-text" id="choice0"></span>
+                </div>
+                <div class="choice-item" data-choice="1">
+                    <span class="choice-letter">B</span>
+                    <span class="choice-text" id="choice1"></span>
+                </div>
+                <div class="choice-item" data-choice="2">
+                    <span class="choice-letter">C</span>
+                    <span class="choice-text" id="choice2"></span>
+                </div>
+                <div class="choice-item" data-choice="3">
+                    <span class="choice-letter">D</span>
+                    <span class="choice-text" id="choice3"></span>
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="controls">
+                <button id="nextBtn" class="control-btn next-btn" style="display: none;">다음 단어</button>
+            </div>
+        </main>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <!-- Section Complete Modal -->
+        <div class="modal-overlay" id="completionModal" style="display: none;">
+            <div class="modal-content">
+                <div class="completion-celebration">🎉</div>
+                <h2 class="completion-title">섹션 완료!</h2>
+                <div class="completion-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">최종 점수</span>
+                        <span class="stat-value" id="finalScore">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">정답률</span>
+                        <span class="stat-value" id="finalAccuracy">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">완료한 테마</span>
+                        <span class="stat-value" id="completedTheme">테마</span>
+                    </div>
+                </div>
+                <div class="completion-actions">
+                    <button class="action-btn primary" id="nextThemeBtn">다른 테마 도전</button>
+                    <button class="action-btn secondary" id="retryThemeBtn">이 테마 다시하기</button>
+                    <button class="action-btn social" id="shareScoreBtn">📱 점수 공유하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
