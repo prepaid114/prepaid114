@@ -313,7 +313,6 @@ class VocabularyQuiz {
         this.speechSynthesis = window.speechSynthesis;
         this.voice = null;
         this.initVoice();
-        this.initCanvasRoundRect();
         
         this.initElements();
         this.bindEvents();
@@ -1872,7 +1871,8 @@ class VocabularyQuiz {
             // Cancel any ongoing speech
             this.speechSynthesis.cancel();
             
-            const word = vocabularyThemes[this.currentTheme].words[this.currentWordIndex].word;
+            // Get the word currently displayed on screen (works for both normal and review mode)
+            const word = this.wordElement.textContent;
             const utterance = new SpeechSynthesisUtterance(word);
             
             utterance.voice = this.voice;
@@ -1892,6 +1892,7 @@ class VocabularyQuiz {
         // Calculate score as percentage of correct answers (100 points max)
         const score = this.totalQuestions > 0 ? Math.round((this.correctAnswers / this.totalQuestions) * 100) : 0;
         this.scoreElement.textContent = score;
+        // Calculate accuracy as percentage (same as score for clarity)
         const accuracy = this.totalQuestions > 0 ? Math.round((this.correctAnswers / this.totalQuestions) * 100) : 0;
         this.accuracyElement.textContent = `${accuracy}%`;
     }
@@ -1984,13 +1985,15 @@ function initializeApp() {
         console.log('VocabularyQuiz initialized successfully');
     } catch (error) {
         console.error('Error initializing VocabularyQuiz:', error);
+        console.error('Error stack:', error.stack);
         
         // Fallback: create a basic error display and manual theme buttons
         const themeGrid = document.getElementById('themeGrid');
         if (themeGrid) {
             themeGrid.innerHTML = `
                 <div style="color: red; text-align: center; padding: 20px; grid-column: 1/-1;">
-                    로딩 중 오류가 발생했습니다. 페이지를 새로고침 해주세요.
+                    로딩 중 오류가 발생했습니다. 
+                    <br><small>오류: ${error.message}</small>
                     <br><br>
                     <button onclick="location.reload()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
                         새로고침
