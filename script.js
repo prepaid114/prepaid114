@@ -510,12 +510,16 @@ class VocabularyQuiz {
             
             choiceElement.textContent = this.currentChoices[i] || '';
             choiceItem.className = 'choice-item';
+            // Remove all selection/result classes
+            choiceItem.classList.remove('correct', 'incorrect', 'selected');
         }
         
         this.feedbackElement.textContent = '';
         this.feedbackElement.className = 'feedback';
         this.nextBtn.style.display = 'none';
         
+        // Update question progress counter
+        this.updateQuestionProgress();
         this.updateProgress();
     }
     
@@ -1439,6 +1443,7 @@ class VocabularyQuiz {
         this.progressFill = document.getElementById('progressFill');
         this.pronunciationBtn = document.getElementById('pronunciationBtn');
         this.autoAdvanceToggle = document.getElementById('autoAdvanceToggle');
+        this.questionProgress = document.getElementById('questionProgress');
         
         // Statistics dashboard elements
         this.statsBtn = document.getElementById('statsBtn');
@@ -1727,13 +1732,25 @@ class VocabularyQuiz {
             
             choiceElement.textContent = this.currentChoices[i] || '';
             choiceItem.className = 'choice-item';
+            // Remove all selection/result classes
+            choiceItem.classList.remove('correct', 'incorrect', 'selected');
         }
         
         this.feedbackElement.textContent = '';
         this.feedbackElement.className = 'feedback';
         this.nextBtn.style.display = 'none';
         
+        // Update question progress counter
+        this.updateQuestionProgress();
         this.updateProgress();
+    }
+    
+    updateQuestionProgress() {
+        if (this.questionProgress) {
+            const currentQuestion = this.totalQuestions + 1;
+            const totalQuestions = this.reviewMode ? this.reviewWords.length : vocabularyThemes[this.currentTheme].words.length;
+            this.questionProgress.textContent = `문제 ${currentQuestion}/${totalQuestions}`;
+        }
     }
     
     selectChoice(choiceIndex) {
