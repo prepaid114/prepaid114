@@ -340,7 +340,10 @@ class VocabularyQuiz {
             
             // Ensure new properties exist for backward compatibility
             if (!progress.learnedWords) progress.learnedWords = [];
-            if (!progress.actualStudyTime) progress.actualStudyTime = 0;
+            if (typeof progress.actualStudyTime === 'undefined') progress.actualStudyTime = 0;
+            if (!progress.completedThemes) progress.completedThemes = {};
+            if (!progress.bestScores) progress.bestScores = {};
+            if (!progress.wrongAnswers) progress.wrongAnswers = {};
             
             return progress;
         } catch (error) {
@@ -1611,7 +1614,7 @@ class VocabularyQuiz {
                 let reviewButton = '';
                 if (wrongAnswersCount > 0) {
                     reviewButton = `
-                        <button class="review-btn" onclick="event.stopPropagation(); quiz.startReview('${themeKey}')">
+                        <button class="review-btn" data-theme="${themeKey}">
                             복습 (${wrongAnswersCount}개)
                         </button>
                     `;
@@ -1626,6 +1629,16 @@ class VocabularyQuiz {
                 `;
                 
                 themeCard.addEventListener('click', () => this.selectTheme(themeKey));
+                
+                // Add review button event listener if exists
+                const reviewBtn = themeCard.querySelector('.review-btn');
+                if (reviewBtn) {
+                    reviewBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        this.startReview(themeKey);
+                    });
+                }
+                
                 this.themeGrid.appendChild(themeCard);
                 console.log(`Added theme card: ${themeKey}`);
             });
@@ -1967,7 +1980,7 @@ function initializeApp() {
             }
         }
         
-        quiz = new VocabularyQuiz();
+        window.quiz = new VocabularyQuiz();
         console.log('VocabularyQuiz initialized successfully');
     } catch (error) {
         console.error('Error initializing VocabularyQuiz:', error);
