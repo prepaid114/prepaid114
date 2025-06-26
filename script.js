@@ -304,7 +304,9 @@ class VocabularyQuiz {
             wordsLearned: 0,
             correctAnswers: 0,
             totalAnswers: 0,
-            startTime: Date.now()
+            startTime: Date.now(),
+            questionStartTime: null,
+            actualStudyTime: 0
         };
         
         // Speech synthesis for pronunciation
@@ -324,15 +326,23 @@ class VocabularyQuiz {
     loadUserProgress() {
         try {
             const saved = localStorage.getItem('vocabularyQuizProgress');
-            return saved ? JSON.parse(saved) : {
+            const progress = saved ? JSON.parse(saved) : {
                 completedThemes: {},
                 totalWordsLearned: 0,
                 bestScores: {},
                 learningStreak: 0,
                 lastPlayDate: null,
                 wrongAnswers: {},
-                totalSessionTime: 0
+                totalSessionTime: 0,
+                learnedWords: [],
+                actualStudyTime: 0
             };
+            
+            // Ensure new properties exist for backward compatibility
+            if (!progress.learnedWords) progress.learnedWords = [];
+            if (!progress.actualStudyTime) progress.actualStudyTime = 0;
+            
+            return progress;
         } catch (error) {
             console.warn('Could not load user progress:', error);
             return {
@@ -342,7 +352,9 @@ class VocabularyQuiz {
                 learningStreak: 0,
                 lastPlayDate: null,
                 wrongAnswers: {},
-                totalSessionTime: 0
+                totalSessionTime: 0,
+                learnedWords: [],
+                actualStudyTime: 0
             };
         }
     }
@@ -390,10 +402,20 @@ class VocabularyQuiz {
             this.userProgress.lastPlayDate = today;
         }
         
-        // Update session stats
-        const sessionTime = Date.now() - this.sessionStats.startTime;
-        this.userProgress.totalSessionTime += sessionTime;
-        this.userProgress.totalWordsLearned += vocabularyThemes[themeKey].words.length;
+        // Update session stats with accurate study time
+        this.userProgress.actualStudyTime += this.sessionStats.actualStudyTime;
+        
+        // Track unique words learned in this theme
+        const themeWords = vocabularyThemes[themeKey].words;
+        for (const word of themeWords) {
+            const wordKey = `${themeKey}_${word.word}`;
+            if (!this.userProgress.learnedWords.includes(wordKey)) {
+                this.userProgress.learnedWords.push(wordKey);
+            }
+        }
+        
+        // Update total words learned (accurate count)
+        this.userProgress.totalWordsLearned = this.userProgress.learnedWords.length;
         
         this.saveUserProgress();
     }
@@ -521,6 +543,9 @@ class VocabularyQuiz {
         // Update question progress counter
         this.updateQuestionProgress();
         this.updateProgress();
+        
+        // Record question start time for accurate study time tracking
+        this.sessionStats.questionStartTime = Date.now();
     }
     
     generateChoicesForReview(reviewWord) {
@@ -582,14 +607,12 @@ class VocabularyQuiz {
         // Learning streak
         document.getElementById('learningStreak').textContent = this.userProgress.learningStreak;
         
-        // Total words learned (approximate)
-        const totalWords = Object.values(this.userProgress.completedThemes).reduce((sum, theme) => {
-            return sum + (theme.timesCompleted * 40); // Assuming 40 words per theme
-        }, 0);
+        // Total words learned (accurate count)
+        const totalWords = this.userProgress.totalWordsLearned || this.userProgress.learnedWords.length || 0;
         document.getElementById('totalWordsLearned').textContent = totalWords;
         
         // Total study time (convert milliseconds to minutes)
-        const totalMinutes = Math.round(this.userProgress.totalSessionTime / (1000 * 60));
+        const totalMinutes = Math.round((this.userProgress.actualStudyTime || this.userProgress.totalSessionTime || 0) / (1000 * 60));
         document.getElementById('totalStudyTime').textContent = `${totalMinutes}분`;
         
         // Average score
@@ -722,10 +745,8 @@ class VocabularyQuiz {
     
     shareStats() {
         const streak = this.userProgress.learningStreak;
-        const totalWords = Object.values(this.userProgress.completedThemes).reduce((sum, theme) => {
-            return sum + (theme.timesCompleted * 40);
-        }, 0);
-        const totalMinutes = Math.round(this.userProgress.totalSessionTime / (1000 * 60));
+        const totalWords = this.userProgress.totalWordsLearned || this.userProgress.learnedWords.length;
+        const totalMinutes = Math.round((this.userProgress.actualStudyTime || this.userProgress.totalSessionTime) / (1000 * 60));
         const completedThemes = Object.keys(this.userProgress.completedThemes).length;
         
         const shareText = `📚 영어 단어 마스터 학습 현황 📚\n\n🔥 연속 학습: ${streak}일\n📖 학습한 단어: ${totalWords}개\n⏱️ 총 학습시간: ${totalMinutes}분\n🎯 완료한 테마: ${completedThemes}개\n\n꾸준한 학습으로 영어 실력을 키워가고 있어요! 💪`;
@@ -1628,6 +1649,16 @@ class VocabularyQuiz {
         this.totalQuestions = 0;
         this.correctAnswers = 0;
         
+        // Reset session stats for new theme
+        this.sessionStats = {
+            wordsLearned: 0,
+            correctAnswers: 0,
+            totalAnswers: 0,
+            startTime: Date.now(),
+            questionStartTime: null,
+            actualStudyTime: 0
+        };
+        
         this.currentThemeLabel.textContent = vocabularyThemes[themeKey].name;
         this.updateScore();
         
@@ -1746,6 +1777,9 @@ class VocabularyQuiz {
         // Update question progress counter
         this.updateQuestionProgress();
         this.updateProgress();
+        
+        // Record question start time for accurate study time tracking
+        this.sessionStats.questionStartTime = Date.now();
     }
     
     updateQuestionProgress() {
@@ -1761,6 +1795,12 @@ class VocabularyQuiz {
         
         this.selectedChoice = choiceIndex;
         this.totalQuestions++;
+        
+        // Record actual study time for this question
+        if (this.sessionStats.questionStartTime) {
+            const questionTime = Date.now() - this.sessionStats.questionStartTime;
+            this.sessionStats.actualStudyTime += questionTime;
+        }
         
         // Show results
         for (let i = 0; i < 4; i++) {
