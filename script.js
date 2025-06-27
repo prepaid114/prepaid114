@@ -2063,18 +2063,28 @@ class VocabularyQuiz {
     }
     
     updateConnectionStatus() {
-        if (!this.connectionStatus) return;
+        // Update both connection status elements
+        const connectionElements = [
+            document.getElementById('connectionStatus'), // Nickname modal
+            document.getElementById('leaderboardConnectionInfo') // Leaderboard modal
+        ];
         
-        const statusDot = this.connectionStatus.querySelector('.status-dot');
-        const statusText = this.connectionStatus.querySelector('.status-text');
+        const isOnline = window.leaderboardManager?.isConnected();
         
-        if (window.leaderboardManager?.isConnected()) {
-            statusDot.className = 'status-dot online';
-            statusText.textContent = '온라인 모드';
-        } else {
-            statusDot.className = 'status-dot offline';
-            statusText.textContent = '오프라인 모드';
-        }
+        connectionElements.forEach((element, index) => {
+            if (!element) return;
+            
+            const statusDot = element.querySelector('.status-dot');
+            const statusText = element.querySelector('.status-text');
+            
+            if (isOnline) {
+                if (statusDot) statusDot.className = 'status-dot online';
+                if (statusText) statusText.textContent = '온라인 모드';
+            } else {
+                if (statusDot) statusDot.className = 'status-dot offline';
+                if (statusText) statusText.textContent = '오프라인 모드';
+            }
+        });
     }
     
     showNicknameModal() {
