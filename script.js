@@ -758,14 +758,20 @@ class VocabularyQuiz {
     // Social Features Methods
     async shareScore(score, accuracy, themeName) {
         try {
+            console.log('shareScore called:', { score, accuracy, themeName });
+            
             // Generate score card image
             const imageBlob = await this.generateScoreCard(score, accuracy, themeName);
+            console.log('Image blob generated:', imageBlob);
             
             if (navigator.share && navigator.canShare) {
+                console.log('Navigator.share available');
                 const testFile = new File([imageBlob], 'score.png', { type: 'image/png' });
                 const canShareFiles = navigator.canShare({ files: [testFile] });
+                console.log('Can share files:', canShareFiles);
                 
                 if (canShareFiles) {
+                    console.log('Attempting to share with files...');
                     // Share with image (supported on mobile)
                     const file = new File([imageBlob], 'english-master-score.png', { type: 'image/png' });
                     await navigator.share({
@@ -773,12 +779,15 @@ class VocabularyQuiz {
                         text: `${themeName} 테마에서 ${score}점을 달성했어요! 🎉`,
                         files: [file]
                     });
+                    console.log('Share completed successfully!');
                 } else {
+                    console.log('File sharing not supported, using fallback...');
                     // Fallback: download image and show share text
                     this.downloadScoreCard(imageBlob, `영어단어마스터_${themeName}_${score}점.png`);
                     this.showToast('📸 점수 카드가 다운로드되었습니다!\n이미지를 SNS에 올려보세요!');
                 }
             } else {
+                console.log('Navigator.share not available, using fallback...');
                 // Fallback: download image and show share text
                 this.downloadScoreCard(imageBlob, `영어단어마스터_${themeName}_${score}점.png`);
                 this.showToast('📸 점수 카드가 다운로드되었습니다!\n이미지를 SNS에 올려보세요!');
@@ -786,7 +795,8 @@ class VocabularyQuiz {
         } catch (error) {
             console.error('Error sharing score:', error);
             // Fallback to text sharing
-            const shareText = `🎯 영어 단어 마스터에서 ${themeName} 테마를 완주했어요!\n📊 점수: ${score}점 | 정답률: ${accuracy}%\n\n함께 영어 단어를 마스터해보세요! 🚀`;
+            const correctAnswers = Math.round((accuracy / 100) * 40);
+            const shareText = `🎯 영어 단어 마스터에서 ${themeName} 테마를 완주했어요!\n📊 점수: ${score}점 | 정답: ${correctAnswers}/40\n\n함께 영어 단어를 마스터해보세요! 🚀`;
             const appUrl = 'https://prepaid114.github.io/prepaid114/';
             this.fallbackShare(shareText, appUrl);
         }
@@ -1032,22 +1042,7 @@ class VocabularyQuiz {
     
     // Score Card Image Generation
     async generateScoreCard(score, accuracy, themeName) {
-        // Ensure roundRect polyfill is available
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
-                this.beginPath();
-                this.moveTo(x + radius, y);
-                this.lineTo(x + width - radius, y);
-                this.quadraticCurveTo(x + width, y, x + width, y + radius);
-                this.lineTo(x + width, y + height - radius);
-                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-                this.lineTo(x + radius, y + height);
-                this.quadraticCurveTo(x, y + height, x, y + height - radius);
-                this.lineTo(x, y + radius);
-                this.quadraticCurveTo(x, y, x + radius, y);
-                this.closePath();
-            };
-        }
+        console.log('Starting canvas generation...');
         
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -1059,6 +1054,7 @@ class VocabularyQuiz {
         // Canvas 크기 설정 (Instagram Square format)
         canvas.width = 800;
         canvas.height = 800;
+        console.log('Canvas size set:', canvas.width, canvas.height);
         
         // 테마별 색상 및 아이콘 가져오기
         const themeKey = Object.keys(vocabularyThemes).find(key => 
@@ -1067,75 +1063,88 @@ class VocabularyQuiz {
         const themeIcon = themeKey ? vocabularyThemes[themeKey].icon : '📚';
         const themeColors = this.getThemeColors(themeKey);
         
-        // 배경 그라데이션
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, themeColors.primary);
-        gradient.addColorStop(1, themeColors.secondary);
-        ctx.fillStyle = gradient;
+        console.log('Canvas debug:', { themeKey, themeIcon, themeColors, themeName });
+        
+        // 단순한 배경색으로 시작 (그라데이션 대신)
+        ctx.fillStyle = themeColors.primary || '#4ecdc4';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        console.log('Solid background applied');
         
-        // 반투명 오버레이
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 카드 컨테이너 (roundRect 대신 일반 rect 사용)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.fillRect(50, 100, canvas.width - 100, canvas.height - 200);
+        console.log('Card container drawn');
         
-        // 카드 컨테이너
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.roundRect(50, 100, canvas.width - 100, canvas.height - 200, 30);
-        ctx.fill();
-        
-        // 제목
-        ctx.fillStyle = '#2c3e50';
-        ctx.font = 'bold 48px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
+        // 제목 (더 진한 색상과 큰 글씨)
+        ctx.fillStyle = '#1a252f';
+        ctx.font = 'bold 36px Arial, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('🎯 영어 단어 마스터', canvas.width / 2, 200);
+        ctx.fillText('🎯 영어 단어 마스터', canvas.width / 2, 170);
+        console.log('Title drawn');
         
-        // 테마 아이콘 및 이름
-        ctx.font = '80px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
-        ctx.fillText(themeIcon, canvas.width / 2, 320);
+        // 구분선 추가
+        ctx.strokeStyle = '#ddd';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(200, 200);
+        ctx.lineTo(600, 200);
+        ctx.stroke();
         
-        ctx.font = 'bold 36px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
-        ctx.fillText(themeName, canvas.width / 2, 380);
+        // 테마 아이콘 (더 크게)
+        ctx.font = '80px Arial, sans-serif';
+        ctx.fillText(themeIcon, canvas.width / 2, 290);
+        console.log('Theme icon drawn');
         
-        // 점수 (메인)
-        ctx.font = 'bold 120px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
-        ctx.fillStyle = themeColors.accent;
-        ctx.fillText(`${score}점`, canvas.width / 2, 520);
+        // 테마 이름 (더 진한 색상)
+        ctx.font = 'bold 32px Arial, sans-serif';
+        ctx.fillStyle = '#1a252f';
+        ctx.fillText(themeName, canvas.width / 2, 340);
+        console.log('Theme name drawn');
         
-        // 정답률
-        ctx.font = 'bold 32px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
-        ctx.fillStyle = '#666';
-        ctx.fillText(`정답률 ${accuracy}%`, canvas.width / 2, 580);
+        // 점수 (메인, 더 강조)
+        ctx.font = 'bold 120px Arial, sans-serif';
+        ctx.fillStyle = themeColors.accent || '#16a085';
+        ctx.fillText(`${score}점`, canvas.width / 2, 480);
+        console.log('Score drawn');
         
-        // 정답률 바 차트
-        const barWidth = 300;
-        const barHeight = 20;
-        const barX = (canvas.width - barWidth) / 2;
-        const barY = 600;
+        // 정답 개수 (더 진한 색상과 큰 글씨)
+        let correctAnswers, totalQuestions;
+        if (typeof accuracy === 'string' && accuracy.includes('/')) {
+            // "2/5" 형식인 경우 (복습 모드 등)
+            const parts = accuracy.split('/');
+            correctAnswers = parseInt(parts[0]) || 0;
+            totalQuestions = parseInt(parts[1]) || 40;
+        } else {
+            // 퍼센트 형식인 경우 (일반 모드)
+            totalQuestions = 40;
+            correctAnswers = Math.round((accuracy / 100) * totalQuestions);
+        }
+        ctx.font = 'bold 32px Arial, sans-serif';
+        ctx.fillStyle = '#34495e';
+        ctx.fillText(`정답 개수: ${correctAnswers}/${totalQuestions}`, canvas.width / 2, 540);
+        console.log('Accuracy drawn');
         
-        // 배경 바
-        ctx.fillStyle = '#e0e0e0';
-        ctx.roundRect(barX, barY, barWidth, barHeight, 10);
-        ctx.fill();
+        // 구분선 추가
+        ctx.strokeStyle = '#ddd';
+        ctx.beginPath();
+        ctx.moveTo(200, 570);
+        ctx.lineTo(600, 570);
+        ctx.stroke();
         
-        // 진행 바
-        ctx.fillStyle = themeColors.accent;
-        ctx.roundRect(barX, barY, (barWidth * accuracy) / 100, barHeight, 10);
-        ctx.fill();
+        // 하단 로고 (더 작게)
+        ctx.font = '18px Arial, sans-serif';
+        ctx.fillStyle = '#7f8c8d';
+        ctx.fillText('prepaid114.github.io/prepaid114', canvas.width / 2, 600);
+        console.log('Footer drawn');
         
-        // 완료 시간
-        const now = new Date();
-        const dateString = now.toLocaleDateString('ko-KR');
-        ctx.font = '24px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
-        ctx.fillStyle = '#999';
-        ctx.fillText(`${dateString} 완료`, canvas.width / 2, 680);
-        
-        // URL
-        ctx.font = '20px "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif';
-        ctx.fillText('prepaid114.github.io/prepaid114', canvas.width / 2, 720);
+        console.log('Canvas rendering completed, converting to blob...');
         
         // Canvas to Blob
         return new Promise(resolve => {
-            canvas.toBlob(resolve, 'image/png', 0.9);
+            canvas.toBlob(blob => {
+                console.log('Blob conversion completed:', blob);
+                resolve(blob);
+            }, 'image/png', 0.9);
         });
     }
     
@@ -1963,12 +1972,14 @@ class VocabularyQuiz {
     }
     
     updateScore() {
+        // Calculate total questions in current quiz (theme or review)
+        const totalQuestionsInQuiz = this.reviewMode ? this.reviewWords.length : vocabularyThemes[this.currentTheme].words.length;
+        
         // Calculate score as percentage of correct answers (100 points max)
         const score = this.totalQuestions > 0 ? Math.round((this.correctAnswers / this.totalQuestions) * 100) : 0;
         this.scoreElement.textContent = score;
-        // Calculate accuracy as percentage (same as score for clarity)
-        const accuracy = this.totalQuestions > 0 ? Math.round((this.correctAnswers / this.totalQuestions) * 100) : 0;
-        this.accuracyElement.textContent = `${accuracy}%`;
+        // Display accuracy as correct/total format
+        this.accuracyElement.textContent = `${this.correctAnswers}/${totalQuestionsInQuiz}`;
     }
     
     updateQuizProgress() {
@@ -1987,9 +1998,9 @@ class VocabularyQuiz {
         
         // Update modal content
         const finalScoreValue = this.totalQuestions > 0 ? Math.round((this.correctAnswers / this.totalQuestions) * 100) : 0;
+        const accuracy = finalScoreValue; // accuracy as percentage for shareScore function
         finalScore.textContent = finalScoreValue;
-        const accuracy = this.totalQuestions > 0 ? Math.round((this.correctAnswers / this.totalQuestions) * 100) : 0;
-        finalAccuracy.textContent = `${accuracy}%`;
+        finalAccuracy.textContent = `${this.correctAnswers}/${this.totalQuestions}`;
         completedTheme.textContent = vocabularyThemes[this.currentTheme].name;
         
         // Check for challenge completion
@@ -2015,8 +2026,20 @@ class VocabularyQuiz {
         };
         
         this.shareScoreBtn.onclick = () => {
-            this.shareScore(finalScoreValue, accuracy, vocabularyThemes[this.currentTheme].name);
+            // 실제 정답 개수/총 문제 수 형식으로 전달
+            const accuracyText = `${this.correctAnswers}/${this.totalQuestions}`;
+            this.shareScore(finalScoreValue, accuracyText, vocabularyThemes[this.currentTheme].name);
         };
+        
+        // 리더보드 버튼 표시/숨김 (전체 40문제 완료 시에만 표시)
+        const saveToLeaderboardBtn = document.getElementById('saveToLeaderboardBtn');
+        if (saveToLeaderboardBtn) {
+            if (this.totalQuestions === 40) {
+                saveToLeaderboardBtn.style.display = 'inline-block';
+            } else {
+                saveToLeaderboardBtn.style.display = 'none';
+            }
+        }
         
         // Close modal on background click
         modal.onclick = (e) => {
@@ -2132,8 +2155,10 @@ class VocabularyQuiz {
             
             // Prepare score data from current quiz results
             const finalScore = document.getElementById('finalScore')?.textContent || '0';
-            const finalAccuracyText = document.getElementById('finalAccuracy')?.textContent || '0%';
-            const finalAccuracy = parseInt(finalAccuracyText.replace('%', '')) || 0;
+            const finalAccuracyText = document.getElementById('finalAccuracy')?.textContent || '0/40';
+            // Parse "10/40" format to get percentage
+            const [correct, total] = finalAccuracyText.split('/').map(num => parseInt(num) || 0);
+            const finalAccuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
             
             console.log('Score data preparation:', {
                 finalScore,
@@ -2320,7 +2345,8 @@ class VocabularyQuiz {
             
             // 가장 최근에 플레이한 테마 찾기
             let recentTheme = '테마';
-            let recentAccuracy = entry.averageAccuracy || 0;
+            let correctAnswers = 0;
+            let totalQuestions = 40; // 각 테마당 40문제
             
             if (entry.themes) {
                 const themeEntries = Object.entries(entry.themes);
@@ -2341,16 +2367,26 @@ class VocabularyQuiz {
                     };
                     
                     recentTheme = themeNames[bestThemeEntry[0]] || bestThemeEntry[0];
-                    recentAccuracy = bestThemeEntry[1].lastAccuracy || recentAccuracy;
+                    
+                    // 정답률로부터 정답 개수 계산 (100점 만점 = 40문제 전부 정답)
+                    const accuracy = bestThemeEntry[1].lastAccuracy || entry.averageAccuracy || 0;
+                    correctAnswers = Math.round((accuracy / 100) * totalQuestions);
                 }
+            } else {
+                // themes 정보가 없는 경우 평균 정답률 사용
+                const accuracy = entry.averageAccuracy || 0;
+                correctAnswers = Math.round((accuracy / 100) * totalQuestions);
             }
+            
+            // 플레이 시간 포맷
+            const playTime = this.formatDateToKorean(entry.lastPlayed);
             
             return `
                 <div class="leaderboard-item">
                     <div class="leaderboard-rank ${rankClass}">${rank}</div>
                     <div class="leaderboard-info">
                         <div class="leaderboard-nickname">${entry.nickname}</div>
-                        <div class="leaderboard-stats">${recentTheme} • ${recentAccuracy}% 정확도</div>
+                        <div class="leaderboard-stats">${recentTheme} • ${correctAnswers}/${totalQuestions} • ${playTime}</div>
                     </div>
                     <div class="leaderboard-score">${entry.bestScore}점</div>
                 </div>
