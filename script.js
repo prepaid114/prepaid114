@@ -317,6 +317,9 @@ class VocabularyQuiz {
         this.initElements();
         this.bindEvents();
         
+        // Initialize leaderboard manager
+        this.initializeLeaderboard();
+        
         // 챌린지 모드 확인
         this.checkChallengeMode() || this.showThemeSelector();
     }
@@ -1481,6 +1484,16 @@ class VocabularyQuiz {
         this.challengeFriendsBtn = document.getElementById('challengeFriendsBtn');
         this.copyLinkBtn = document.getElementById('copyLinkBtn');
         
+        // Leaderboard elements
+        this.saveToLeaderboardBtn = document.getElementById('saveToLeaderboardBtn');
+        this.nicknameModal = document.getElementById('nicknameModal');
+        this.leaderboardModal = document.getElementById('leaderboardModal');
+        this.nicknameInput = document.getElementById('nicknameInput');
+        this.saveNicknameBtn = document.getElementById('saveNicknameBtn');
+        this.cancelNicknameBtn = document.getElementById('cancelNicknameBtn');
+        this.closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+        this.connectionStatus = document.getElementById('connectionStatus');
+        
         // Log element states for debugging
         console.log('Elements initialized:', {
             themeSelector: !!this.themeSelector,
@@ -1548,6 +1561,23 @@ class VocabularyQuiz {
         this.shareStatsBtn.addEventListener('click', () => this.shareStats());
         this.challengeFriendsBtn.addEventListener('click', () => this.challengeFriends());
         this.copyLinkBtn.addEventListener('click', () => this.copyAppLink());
+        
+        // Leaderboard events
+        if (this.saveToLeaderboardBtn) {
+            this.saveToLeaderboardBtn.addEventListener('click', () => this.showNicknameModal());
+        }
+        
+        if (this.saveNicknameBtn) {
+            this.saveNicknameBtn.addEventListener('click', () => this.saveToLeaderboard());
+        }
+        
+        if (this.cancelNicknameBtn) {
+            this.cancelNicknameBtn.addEventListener('click', () => this.hideNicknameModal());
+        }
+        
+        if (this.closeLeaderboardBtn) {
+            this.closeLeaderboardBtn.addEventListener('click', () => this.hideLeaderboardModal());
+        }
         
         // Choice selection
         this.choicesSection.addEventListener('click', (e) => {
@@ -2001,6 +2031,300 @@ function initializeApp() {
                 </div>
             `;
         }
+    }
+    
+    // Leaderboard Management Methods
+    async initializeLeaderboard() {
+        console.log('Initializing leaderboard...');
+        if (window.leaderboardManager) {
+            console.log('LeaderboardManager found, initializing...');
+            await window.leaderboardManager.initialize();
+            this.updateConnectionStatus();
+        } else {
+            console.warn('LeaderboardManager not found');
+        }
+    }
+    
+    updateConnectionStatus() {
+        if (!this.connectionStatus) return;
+        
+        const statusDot = this.connectionStatus.querySelector('.status-dot');
+        const statusText = this.connectionStatus.querySelector('.status-text');
+        
+        if (window.leaderboardManager?.isConnected()) {
+            statusDot.className = 'status-dot online';
+            statusText.textContent = '온라인 모드';
+        } else {
+            statusDot.className = 'status-dot offline';
+            statusText.textContent = '오프라인 모드';
+        }
+    }
+    
+    showNicknameModal() {
+        console.log('showNicknameModal called');
+        
+        if (!this.nicknameModal) {
+            console.warn('nicknameModal element not found');
+            return;
+        }
+        
+        // Update connection status
+        this.updateConnectionStatus();
+        
+        // Check if user already has a nickname
+        const currentUser = window.leaderboardManager?.getCurrentUser();
+        if (currentUser) {
+            this.nicknameInput.value = currentUser.nickname;
+        }
+        
+        console.log('Showing nickname modal');
+        this.nicknameModal.style.display = 'flex';
+        
+        if (this.nicknameInput) {
+            this.nicknameInput.focus();
+            
+            // 실시간 닉네임 체크
+            let checkTimeout;
+            this.nicknameInput.oninput = (e) => {
+                clearTimeout(checkTimeout);
+                const nickname = e.target.value.trim();
+                
+                // 닉네임 길이 체크
+                if (nickname.length > 10) {
+                    this.showNicknameStatus('닉네임은 10자 이하로 입력해주세요.', 'error');
+                    return;
+                }
+                
+                if (nickname.length < 2) {
+                    this.showNicknameStatus('', '');
+                    return;
+                }
+                
+                // 500ms 후 중복 체크
+                checkTimeout = setTimeout(async () => {
+                    await this.checkNicknameAvailability(nickname);
+                }, 500);
+            };
+            
+            // Enter key to save
+            this.nicknameInput.onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    console.log('Enter key pressed');
+                    this.saveToLeaderboard();
+                }
+            };
+        }
+        
+        // Add background click to close modal
+        this.nicknameModal.onclick = (e) => {
+            if (e.target === this.nicknameModal) {
+                console.log('Modal background clicked');
+                this.hideNicknameModal();
+            }
+        };
+    }
+    
+    async checkNicknameAvailability(nickname) {
+        try {
+            this.showNicknameStatus('확인 중...', 'checking');
+            const isAvailable = await window.leaderboardManager.isNicknameAvailable(nickname);
+            
+            if (isAvailable) {
+                this.showNicknameStatus('사용 가능한 닉네임입니다.', 'success');
+            } else {
+                this.showNicknameStatus('이미 사용 중인 닉네임입니다.', 'error');
+            }
+        } catch (error) {
+            console.warn('Nickname availability check failed:', error);
+            this.showNicknameStatus('', '');
+        }
+    }
+    
+    showNicknameStatus(message, type) {
+        const statusElement = this.connectionStatus.querySelector('.status-text');
+        const statusDot = this.connectionStatus.querySelector('.status-dot');
+        
+        if (statusElement) {
+            statusElement.textContent = message;
+        }
+        
+        if (statusDot) {
+            statusDot.className = 'status-dot';
+            if (type === 'success') {
+                statusDot.classList.add('online');
+            } else if (type === 'error') {
+                statusDot.classList.add('offline');
+            } else if (type === 'checking') {
+                statusDot.style.background = '#f39c12';
+            } else {
+                // Reset to connection status
+                this.updateConnectionStatus();
+                return;
+            }
+        }
+    }
+    
+    hideNicknameModal() {
+        if (this.nicknameModal) {
+            this.nicknameModal.style.display = 'none';
+            this.nicknameInput.value = '';
+            // Reset status display
+            this.updateConnectionStatus();
+        }
+    }
+    
+    async saveToLeaderboard() {
+        console.log('saveToLeaderboard function called!');
+        
+        if (!this.nicknameInput) {
+            console.error('nicknameInput not found');
+            alert('닉네임 입력 필드를 찾을 수 없습니다.');
+            return;
+        }
+        
+        const nickname = this.nicknameInput.value.trim();
+        console.log('Nickname entered:', nickname);
+        
+        if (!nickname || nickname.length < 2) {
+            console.log('Nickname too short:', nickname);
+            alert('닉네임은 2자 이상 입력해주세요.');
+            return;
+        }
+
+        if (nickname.length > 10) {
+            alert('닉네임은 10자 이하로 입력해주세요.');
+            return;
+        }
+
+        // 닉네임 중복 체크
+        console.log('Checking nickname availability...');
+        try {
+            const isAvailable = await window.leaderboardManager.isNicknameAvailable(nickname);
+            if (!isAvailable) {
+                alert(`"${nickname}"은(는) 이미 사용 중입니다.\n다른 닉네임을 사용해주세요.`);
+                this.nicknameInput.focus();
+                return;
+            }
+            console.log('Nickname is available');
+        } catch (error) {
+            console.warn('Nickname check failed:', error);
+            // 체크 실패 시 계속 진행
+        }
+        
+        if (!window.leaderboardManager) {
+            console.error('leaderboardManager not found');
+            alert('리더보드 시스템이 초기화되지 않았습니다.');
+            return;
+        }
+        
+        console.log('leaderboardManager found, proceeding...');
+        
+        try {
+            // Set user nickname
+            console.log('Setting user nickname...');
+            window.leaderboardManager.setUser(nickname);
+            console.log('User nickname set successfully');
+            
+            // Prepare score data from current quiz results
+            const finalScore = document.getElementById('finalScore')?.textContent || '0';
+            const finalAccuracy = document.getElementById('finalAccuracy')?.textContent.replace('%', '') || '0';
+            
+            console.log('Final score element value:', finalScore);
+            console.log('Final accuracy element value:', finalAccuracy);
+            console.log('Current theme:', this.currentTheme);
+            console.log('Session study time:', this.sessionStats.actualStudyTime);
+            
+            const scoreData = {
+                score: parseInt(finalScore),
+                accuracy: parseInt(finalAccuracy),
+                theme: this.currentTheme,
+                studyTime: this.sessionStats.actualStudyTime
+            };
+            
+            console.log('Score data prepared:', scoreData);
+            
+            // Save to leaderboard with timeout
+            console.log('Calling saveScore...');
+            const savePromise = window.leaderboardManager.saveScore(scoreData);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout')), 5000)
+            );
+            
+            const result = await Promise.race([savePromise, timeoutPromise]);
+            console.log('saveScore result:', result);
+            
+            this.hideNicknameModal();
+            
+            if (result.success) {
+                if (result.online) {
+                    alert('🎉 점수가 온라인 리더보드에 저장되었습니다!');
+                } else {
+                    alert('✅ 점수가 로컬에 저장되었습니다. (온라인 연결 시 동기화됩니다)');
+                }
+                
+                // Show leaderboard
+                this.showLeaderboardModal();
+            } else {
+                alert('점수 저장 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('Error saving to leaderboard:', error);
+            this.hideNicknameModal();
+            
+            if (error.message === 'Timeout') {
+                alert('⚠️ 네트워크 연결이 불안정합니다. 점수가 로컬에 저장되었습니다.');
+            } else {
+                alert('점수 저장 중 오류가 발생했습니다.');
+            }
+        }
+    }
+    
+    showLeaderboardModal() {
+        if (this.leaderboardModal) {
+            this.leaderboardModal.style.display = 'flex';
+            this.loadLeaderboardData();
+        }
+    }
+    
+    hideLeaderboardModal() {
+        if (this.leaderboardModal) {
+            this.leaderboardModal.style.display = 'none';
+        }
+    }
+    
+    async loadLeaderboardData() {
+        try {
+            const leaderboard = await window.leaderboardManager.getLeaderboard(10);
+            this.displayLeaderboard(leaderboard);
+        } catch (error) {
+            console.error('Failed to load leaderboard:', error);
+        }
+    }
+    
+    displayLeaderboard(leaderboard) {
+        const globalLeaderboard = document.getElementById('globalLeaderboard');
+        if (!globalLeaderboard) return;
+        
+        if (leaderboard.length === 0) {
+            globalLeaderboard.innerHTML = '<div class="loading">아직 등록된 점수가 없습니다.</div>';
+            return;
+        }
+        
+        globalLeaderboard.innerHTML = leaderboard.map((entry, index) => {
+            const rank = index + 1;
+            const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+            
+            return `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank ${rankClass}">${rank}</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-nickname">${entry.nickname}</div>
+                        <div class="leaderboard-stats">${entry.theme || '테마'} • ${entry.accuracy || 0}% 정확도</div>
+                    </div>
+                    <div class="leaderboard-score">${entry.score || entry.bestScore}점</div>
+                </div>
+            `;
+        }).join('');
     }
 }
 
