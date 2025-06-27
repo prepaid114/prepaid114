@@ -547,7 +547,7 @@ class VocabularyQuiz {
         
         // Update question progress counter
         this.updateQuestionProgress();
-        this.updateProgress();
+        this.updateQuizProgress();
         
         // Record question start time for accurate study time tracking
         this.sessionStats.questionStartTime = Date.now();
@@ -626,6 +626,50 @@ class VocabularyQuiz {
         document.getElementById('averageScore').textContent = `${averageScore}점`;
     }
     
+    formatDateToKorean(dateString) {
+        if (!dateString || dateString === '없음') return '없음';
+        
+        try {
+            const date = new Date(dateString);
+            const now = new Date();
+            
+            // 같은 날인지 확인
+            if (date.toDateString() === now.toDateString()) {
+                return '오늘';
+            }
+            
+            // 어제인지 확인
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (date.toDateString() === yesterday.toDateString()) {
+                return '어제';
+            }
+            
+            // 일주일 이내인지 확인
+            const weekAgo = new Date(now);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            if (date > weekAgo) {
+                const daysAgo = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+                return `${daysAgo}일 전`;
+            }
+            
+            // 그 외의 경우 한국어 날짜 형식으로
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            // 올해인 경우 년도 생략
+            if (year === now.getFullYear()) {
+                return `${month}월 ${day}일`;
+            } else {
+                return `${year}년 ${month}월 ${day}일`;
+            }
+        } catch (error) {
+            console.warn('Date formatting error:', error);
+            return dateString;
+        }
+    }
+    
     updateThemeStats() {
         const themeStatsGrid = document.getElementById('themeStatsGrid');
         themeStatsGrid.innerHTML = '';
@@ -640,7 +684,7 @@ class VocabularyQuiz {
             themeStatItem.className = 'theme-stat-item';
             
             const completionCount = themeProgress ? themeProgress.timesCompleted : 0;
-            const lastCompleted = themeProgress ? themeProgress.lastCompleted : '없음';
+            const lastCompleted = themeProgress ? this.formatDateToKorean(themeProgress.lastCompleted) : '없음';
             
             themeStatItem.innerHTML = `
                 <div class="theme-stat-header">
@@ -1818,7 +1862,7 @@ class VocabularyQuiz {
         
         // Update question progress counter
         this.updateQuestionProgress();
-        this.updateProgress();
+        this.updateQuizProgress();
         
         // Record question start time for accurate study time tracking
         this.sessionStats.questionStartTime = Date.now();
@@ -1927,7 +1971,7 @@ class VocabularyQuiz {
         this.accuracyElement.textContent = `${accuracy}%`;
     }
     
-    updateProgress() {
+    updateQuizProgress() {
         const currentWords = vocabularyThemes[this.currentTheme].words;
         const progress = (this.usedIndices.length / currentWords.length) * 100;
         this.progressFill.style.width = `${progress}%`;
@@ -1982,56 +2026,6 @@ class VocabularyQuiz {
             }
         };
     }
-}
-
-// Global quiz instance for review functionality
-let quiz;
-
-// Ensure the app initializes even if there are timing issues
-let initAttempts = 0;
-const maxInitAttempts = 3;
-
-function initializeApp() {
-    console.log(`DOM loaded, starting VocabularyQuiz... (attempt ${initAttempts + 1})`);
-    
-    try {
-        // Check if critical elements exist
-        const themeGrid = document.getElementById('themeGrid');
-        const themeSelector = document.getElementById('themeSelector');
-        const mainContent = document.getElementById('mainContent');
-        
-        if (!themeGrid || !themeSelector || !mainContent) {
-            console.warn('Critical elements not found, retrying...');
-            initAttempts++;
-            if (initAttempts < maxInitAttempts) {
-                setTimeout(initializeApp, 100);
-                return;
-            } else {
-                throw new Error('Critical DOM elements not found after multiple attempts');
-            }
-        }
-        
-        window.quiz = new VocabularyQuiz();
-        console.log('VocabularyQuiz initialized successfully');
-    } catch (error) {
-        console.error('Error initializing VocabularyQuiz:', error);
-        console.error('Error stack:', error.stack);
-        
-        // Fallback: create a basic error display and manual theme buttons
-        const themeGrid = document.getElementById('themeGrid');
-        if (themeGrid) {
-            themeGrid.innerHTML = `
-                <div style="color: red; text-align: center; padding: 20px; grid-column: 1/-1;">
-                    로딩 중 오류가 발생했습니다. 
-                    <br><small>오류: ${error.message}</small>
-                    <br><br>
-                    <button onclick="location.reload()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                        새로고침
-                    </button>
-                </div>
-            `;
-        }
-    }
     
     // Leaderboard Management Methods
     async initializeLeaderboard() {
@@ -2083,33 +2077,9 @@ function initializeApp() {
         if (this.nicknameInput) {
             this.nicknameInput.focus();
             
-            // 실시간 닉네임 체크
-            let checkTimeout;
-            this.nicknameInput.oninput = (e) => {
-                clearTimeout(checkTimeout);
-                const nickname = e.target.value.trim();
-                
-                // 닉네임 길이 체크
-                if (nickname.length > 10) {
-                    this.showNicknameStatus('닉네임은 10자 이하로 입력해주세요.', 'error');
-                    return;
-                }
-                
-                if (nickname.length < 2) {
-                    this.showNicknameStatus('', '');
-                    return;
-                }
-                
-                // 500ms 후 중복 체크
-                checkTimeout = setTimeout(async () => {
-                    await this.checkNicknameAvailability(nickname);
-                }, 500);
-            };
-            
             // Enter key to save
             this.nicknameInput.onkeypress = (e) => {
                 if (e.key === 'Enter') {
-                    console.log('Enter key pressed');
                     this.saveToLeaderboard();
                 }
             };
@@ -2118,57 +2088,15 @@ function initializeApp() {
         // Add background click to close modal
         this.nicknameModal.onclick = (e) => {
             if (e.target === this.nicknameModal) {
-                console.log('Modal background clicked');
                 this.hideNicknameModal();
             }
         };
-    }
-    
-    async checkNicknameAvailability(nickname) {
-        try {
-            this.showNicknameStatus('확인 중...', 'checking');
-            const isAvailable = await window.leaderboardManager.isNicknameAvailable(nickname);
-            
-            if (isAvailable) {
-                this.showNicknameStatus('사용 가능한 닉네임입니다.', 'success');
-            } else {
-                this.showNicknameStatus('이미 사용 중인 닉네임입니다.', 'error');
-            }
-        } catch (error) {
-            console.warn('Nickname availability check failed:', error);
-            this.showNicknameStatus('', '');
-        }
-    }
-    
-    showNicknameStatus(message, type) {
-        const statusElement = this.connectionStatus.querySelector('.status-text');
-        const statusDot = this.connectionStatus.querySelector('.status-dot');
-        
-        if (statusElement) {
-            statusElement.textContent = message;
-        }
-        
-        if (statusDot) {
-            statusDot.className = 'status-dot';
-            if (type === 'success') {
-                statusDot.classList.add('online');
-            } else if (type === 'error') {
-                statusDot.classList.add('offline');
-            } else if (type === 'checking') {
-                statusDot.style.background = '#f39c12';
-            } else {
-                // Reset to connection status
-                this.updateConnectionStatus();
-                return;
-            }
-        }
     }
     
     hideNicknameModal() {
         if (this.nicknameModal) {
             this.nicknameModal.style.display = 'none';
             this.nicknameInput.value = '';
-            // Reset status display
             this.updateConnectionStatus();
         }
     }
@@ -2177,16 +2105,13 @@ function initializeApp() {
         console.log('saveToLeaderboard function called!');
         
         if (!this.nicknameInput) {
-            console.error('nicknameInput not found');
             alert('닉네임 입력 필드를 찾을 수 없습니다.');
             return;
         }
         
         const nickname = this.nicknameInput.value.trim();
-        console.log('Nickname entered:', nickname);
         
         if (!nickname || nickname.length < 2) {
-            console.log('Nickname too short:', nickname);
             alert('닉네임은 2자 이상 입력해주세요.');
             return;
         }
@@ -2196,62 +2121,41 @@ function initializeApp() {
             return;
         }
 
-        // 닉네임 중복 체크
-        console.log('Checking nickname availability...');
-        try {
-            const isAvailable = await window.leaderboardManager.isNicknameAvailable(nickname);
-            if (!isAvailable) {
-                alert(`"${nickname}"은(는) 이미 사용 중입니다.\n다른 닉네임을 사용해주세요.`);
-                this.nicknameInput.focus();
-                return;
-            }
-            console.log('Nickname is available');
-        } catch (error) {
-            console.warn('Nickname check failed:', error);
-            // 체크 실패 시 계속 진행
-        }
-        
         if (!window.leaderboardManager) {
-            console.error('leaderboardManager not found');
             alert('리더보드 시스템이 초기화되지 않았습니다.');
             return;
         }
         
-        console.log('leaderboardManager found, proceeding...');
-        
         try {
             // Set user nickname
-            console.log('Setting user nickname...');
             window.leaderboardManager.setUser(nickname);
-            console.log('User nickname set successfully');
             
             // Prepare score data from current quiz results
             const finalScore = document.getElementById('finalScore')?.textContent || '0';
-            const finalAccuracy = document.getElementById('finalAccuracy')?.textContent.replace('%', '') || '0';
+            const finalAccuracyText = document.getElementById('finalAccuracy')?.textContent || '0%';
+            const finalAccuracy = parseInt(finalAccuracyText.replace('%', '')) || 0;
             
-            console.log('Final score element value:', finalScore);
-            console.log('Final accuracy element value:', finalAccuracy);
-            console.log('Current theme:', this.currentTheme);
-            console.log('Session study time:', this.sessionStats.actualStudyTime);
+            console.log('Score data preparation:', {
+                finalScore,
+                finalAccuracyText,
+                finalAccuracy,
+                theme: this.currentTheme
+            });
             
             const scoreData = {
                 score: parseInt(finalScore),
-                accuracy: parseInt(finalAccuracy),
+                accuracy: finalAccuracy,
                 theme: this.currentTheme,
-                studyTime: this.sessionStats.actualStudyTime
+                studyTime: this.sessionStats.actualStudyTime || 0
             };
             
-            console.log('Score data prepared:', scoreData);
-            
             // Save to leaderboard with timeout
-            console.log('Calling saveScore...');
             const savePromise = window.leaderboardManager.saveScore(scoreData);
             const timeoutPromise = new Promise((_, reject) => 
                 setTimeout(() => reject(new Error('Timeout')), 5000)
             );
             
             const result = await Promise.race([savePromise, timeoutPromise]);
-            console.log('saveScore result:', result);
             
             this.hideNicknameModal();
             
@@ -2259,10 +2163,8 @@ function initializeApp() {
                 if (result.online) {
                     alert('🎉 점수가 온라인 리더보드에 저장되었습니다!');
                 } else {
-                    alert('✅ 점수가 로컬에 저장되었습니다. (온라인 연결 시 동기화됩니다)');
+                    alert('✅ 점수가 로컬에 저장되었습니다.');
                 }
-                
-                // Show leaderboard
                 this.showLeaderboardModal();
             } else {
                 alert('점수 저장 중 오류가 발생했습니다.');
@@ -2270,20 +2172,46 @@ function initializeApp() {
         } catch (error) {
             console.error('Error saving to leaderboard:', error);
             this.hideNicknameModal();
-            
-            if (error.message === 'Timeout') {
-                alert('⚠️ 네트워크 연결이 불안정합니다. 점수가 로컬에 저장되었습니다.');
-            } else {
-                alert('점수 저장 중 오류가 발생했습니다.');
-            }
+            alert('점수 저장 중 오류가 발생했습니다.');
         }
     }
     
     showLeaderboardModal() {
         if (this.leaderboardModal) {
             this.leaderboardModal.style.display = 'flex';
+            this.initializeLeaderboardTabs();
             this.loadLeaderboardData();
         }
+    }
+    
+    initializeLeaderboardTabs() {
+        // Tab button event listeners
+        const tabButtons = this.leaderboardModal.querySelectorAll('.tab-btn');
+        const tabContents = this.leaderboardModal.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+                
+                // Update active tab button
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update active tab content
+                tabContents.forEach(content => content.classList.remove('active'));
+                const targetContent = this.leaderboardModal.querySelector(`#${targetTab}Tab`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+                
+                // Load appropriate data
+                if (targetTab === 'global') {
+                    this.loadLeaderboardData();
+                } else if (targetTab === 'personal') {
+                    this.loadPersonalStats();
+                }
+            });
+        });
     }
     
     hideLeaderboardModal() {
@@ -2299,6 +2227,82 @@ function initializeApp() {
         } catch (error) {
             console.error('Failed to load leaderboard:', error);
         }
+    }
+    
+    loadPersonalStats() {
+        const personalStatsDiv = document.getElementById('personalStats');
+        if (!personalStatsDiv) {
+            console.error('personalStats element not found');
+            return;
+        }
+        
+        console.log('Loading personal stats...');
+        
+        const currentUser = window.leaderboardManager?.getCurrentUser();
+        if (!currentUser) {
+            personalStatsDiv.innerHTML = '<div class="loading">닉네임을 설정해주세요.</div>';
+            return;
+        }
+        
+        console.log('Current user:', currentUser);
+        console.log('User progress:', this.userProgress);
+        console.log('User progress details:', {
+            completedThemes: this.userProgress.completedThemes,
+            bestScores: this.userProgress.bestScores,
+            totalWordsLearned: this.userProgress.totalWordsLearned
+        });
+        console.log('completedThemes keys:', Object.keys(this.userProgress.completedThemes || {}));
+        console.log('bestScores keys:', Object.keys(this.userProgress.bestScores || {}));
+        
+        // Get local user progress data
+        const userProgress = this.userProgress || {};
+        
+        // Calculate personal statistics with safe defaults
+        const totalThemes = Object.keys(vocabularyThemes || {}).length;
+        const completedThemes = Object.keys(userProgress.completedThemes || {}).length;
+        const totalGames = Object.values(userProgress.completedThemes || {})
+            .reduce((sum, theme) => sum + (theme.timesCompleted || 0), 0);
+        
+        const bestScores = Object.values(userProgress.bestScores || {});
+        const averageScore = bestScores.length > 0 
+            ? bestScores.reduce((sum, score) => sum + score, 0) / bestScores.length 
+            : 0;
+        
+        console.log('Calculated stats:', {
+            totalThemes,
+            completedThemes,
+            totalGames,
+            averageScore
+        });
+        
+        personalStatsDiv.innerHTML = `
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">닉네임</span>
+                <span class="personal-stat-value">${currentUser.nickname}</span>
+            </div>
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">완료한 테마</span>
+                <span class="personal-stat-value">${completedThemes}/${totalThemes}</span>
+            </div>
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">총 게임 수</span>
+                <span class="personal-stat-value">${totalGames}회</span>
+            </div>
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">평균 점수</span>
+                <span class="personal-stat-value">${Math.round(averageScore)}점</span>
+            </div>
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">학습한 단어</span>
+                <span class="personal-stat-value">${userProgress.totalWordsLearned || 0}개</span>
+            </div>
+            <div class="personal-stat-item">
+                <span class="personal-stat-label">연속 학습일</span>
+                <span class="personal-stat-value">${userProgress.currentStreak || 0}일</span>
+            </div>
+        `;
+        
+        console.log('Personal stats loaded successfully');
     }
     
     displayLeaderboard(leaderboard) {
@@ -2325,6 +2329,56 @@ function initializeApp() {
                 </div>
             `;
         }).join('');
+    }
+}
+
+// Global quiz instance for review functionality
+let quiz;
+
+// Ensure the app initializes even if there are timing issues
+let initAttempts = 0;
+const maxInitAttempts = 3;
+
+function initializeApp() {
+    console.log(`DOM loaded, starting VocabularyQuiz... (attempt ${initAttempts + 1})`);
+    
+    try {
+        // Check if critical elements exist
+        const themeGrid = document.getElementById('themeGrid');
+        const themeSelector = document.getElementById('themeSelector');
+        const mainContent = document.getElementById('mainContent');
+        
+        if (!themeGrid || !themeSelector || !mainContent) {
+            console.warn('Critical elements not found, retrying...');
+            initAttempts++;
+            if (initAttempts < maxInitAttempts) {
+                setTimeout(initializeApp, 100);
+                return;
+            } else {
+                throw new Error('Critical DOM elements not found after multiple attempts');
+            }
+        }
+        
+        window.quiz = new VocabularyQuiz();
+        console.log('VocabularyQuiz initialized successfully');
+    } catch (error) {
+        console.error('Error initializing VocabularyQuiz:', error);
+        console.error('Error stack:', error.stack);
+        
+        // Fallback: create a basic error display and manual theme buttons
+        const themeGrid = document.getElementById('themeGrid');
+        if (themeGrid) {
+            themeGrid.innerHTML = `
+                <div style="color: red; text-align: center; padding: 20px; grid-column: 1/-1;">
+                    로딩 중 오류가 발생했습니다. 
+                    <br><small>오류: ${error.message}</small>
+                    <br><br>
+                    <button onclick="location.reload()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        새로고침
+                    </button>
+                </div>
+            `;
+        }
     }
 }
 
