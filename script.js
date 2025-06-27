@@ -1715,6 +1715,7 @@ class VocabularyQuiz {
         this.feedbackElement = document.getElementById('feedback');
         this.scoreElement = document.getElementById('score');
         this.accuracyElement = document.getElementById('accuracy');
+        this.scoreBoard = document.getElementById('scoreBoard');
         this.progressFill = document.getElementById('progressFill');
         this.pronunciationBtn = document.getElementById('pronunciationBtn');
         this.autoAdvanceToggle = document.getElementById('autoAdvanceToggle');
@@ -1877,6 +1878,9 @@ class VocabularyQuiz {
         console.log('Showing theme selector...');
         this.themeSelector.style.display = 'block';
         this.mainContent.style.display = 'none';
+        if (this.scoreBoard) {
+            this.scoreBoard.style.display = 'none';
+        }
         this.renderThemes();
     }
     
@@ -1979,6 +1983,10 @@ class VocabularyQuiz {
         
         this.themeSelector.style.display = 'none';
         this.mainContent.style.display = 'block';
+        
+        if (this.scoreBoard) {
+            this.scoreBoard.style.display = 'block';
+        }
         
         this.loadNewWord();
     }
