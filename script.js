@@ -274,6 +274,190 @@ const vocabularyThemes = {
             { word: "cybersecurity", meaning: "사이버보안", type: "명사" },
             { word: "automation", meaning: "자동화", type: "명사" }
         ]
+    },
+    medical: {
+        name: "의료 건강",
+        icon: "🏥",
+        words: [
+            { word: "anatomy", meaning: "해부학", type: "명사" },
+            { word: "antibiotic", meaning: "항생제", type: "명사" },
+            { word: "appointment", meaning: "예약", type: "명사" },
+            { word: "diagnosis", meaning: "진단", type: "명사" },
+            { word: "emergency", meaning: "응급상황", type: "명사" },
+            { word: "examination", meaning: "검사", type: "명사" },
+            { word: "fever", meaning: "열", type: "명사" },
+            { word: "hospital", meaning: "병원", type: "명사" },
+            { word: "injection", meaning: "주사", type: "명사" },
+            { word: "medicine", meaning: "약", type: "명사" },
+            { word: "nurse", meaning: "간호사", type: "명사" },
+            { word: "operation", meaning: "수술", type: "명사" },
+            { word: "patient", meaning: "환자", type: "명사" },
+            { word: "prescription", meaning: "처방전", type: "명사" },
+            { word: "recovery", meaning: "회복", type: "명사" },
+            { word: "surgeon", meaning: "외과의사", type: "명사" },
+            { word: "symptom", meaning: "증상", type: "명사" },
+            { word: "therapy", meaning: "치료", type: "명사" },
+            { word: "treatment", meaning: "치료", type: "명사" },
+            { word: "vaccine", meaning: "백신", type: "명사" },
+            { word: "allergy", meaning: "알레르기", type: "명사" },
+            { word: "bandage", meaning: "붕대", type: "명사" },
+            { word: "cardiac", meaning: "심장의", type: "형용사" },
+            { word: "diabetes", meaning: "당뇨병", type: "명사" },
+            { word: "epidemic", meaning: "유행병", type: "명사" },
+            { word: "fracture", meaning: "골절", type: "명사" },
+            { word: "genetic", meaning: "유전의", type: "형용사" },
+            { word: "hygiene", meaning: "위생", type: "명사" },
+            { word: "immune", meaning: "면역의", type: "형용사" },
+            { word: "laboratory", meaning: "실험실", type: "명사" },
+            { word: "mental", meaning: "정신의", type: "형용사" },
+            { word: "nutrition", meaning: "영양", type: "명사" },
+            { word: "obesity", meaning: "비만", type: "명사" },
+            { word: "physical", meaning: "신체의", type: "형용사" },
+            { word: "quarantine", meaning: "격리", type: "명사" },
+            { word: "radiation", meaning: "방사선", type: "명사" },
+            { word: "specialist", meaning: "전문의", type: "명사" },
+            { word: "trauma", meaning: "외상", type: "명사" },
+            { word: "ultrasound", meaning: "초음파", type: "명사" },
+            { word: "vitamin", meaning: "비타민", type: "명사" }
+        ]
+    },
+    legal: {
+        name: "법률 법무",
+        icon: "⚖️",
+        words: [
+            { word: "attorney", meaning: "변호사", type: "명사" },
+            { word: "court", meaning: "법원", type: "명사" },
+            { word: "contract", meaning: "계약", type: "명사" },
+            { word: "defendant", meaning: "피고", type: "명사" },
+            { word: "evidence", meaning: "증거", type: "명사" },
+            { word: "guilty", meaning: "유죄의", type: "형용사" },
+            { word: "innocent", meaning: "무죄의", type: "형용사" },
+            { word: "judge", meaning: "판사", type: "명사" },
+            { word: "jury", meaning: "배심원", type: "명사" },
+            { word: "lawsuit", meaning: "소송", type: "명사" },
+            { word: "legal", meaning: "법적인", type: "형용사" },
+            { word: "license", meaning: "면허", type: "명사" },
+            { word: "plaintiff", meaning: "원고", type: "명사" },
+            { word: "prosecution", meaning: "기소", type: "명사" },
+            { word: "regulation", meaning: "규정", type: "명사" },
+            { word: "statute", meaning: "법령", type: "명사" },
+            { word: "testimony", meaning: "증언", type: "명사" },
+            { word: "trial", meaning: "재판", type: "명사" },
+            { word: "verdict", meaning: "평결", type: "명사" },
+            { word: "witness", meaning: "증인", type: "명사" },
+            { word: "appeal", meaning: "항소", type: "명사" },
+            { word: "bail", meaning: "보석", type: "명사" },
+            { word: "copyright", meaning: "저작권", type: "명사" },
+            { word: "custody", meaning: "구금", type: "명사" },
+            { word: "enforcement", meaning: "집행", type: "명사" },
+            { word: "felony", meaning: "중죄", type: "명사" },
+            { word: "guardian", meaning: "후견인", type: "명사" },
+            { word: "hearing", meaning: "청문회", type: "명사" },
+            { word: "inheritance", meaning: "상속", type: "명사" },
+            { word: "jurisdiction", meaning: "관할권", type: "명사" },
+            { word: "liability", meaning: "책임", type: "명사" },
+            { word: "misdemeanor", meaning: "경범죄", type: "명사" },
+            { word: "notary", meaning: "공증인", type: "명사" },
+            { word: "oath", meaning: "맹세", type: "명사" },
+            { word: "petition", meaning: "탄원서", type: "명사" },
+            { word: "settlement", meaning: "합의", type: "명사" },
+            { word: "subpoena", meaning: "소환장", type: "명사" },
+            { word: "trademark", meaning: "상표", type: "명사" },
+            { word: "violation", meaning: "위반", type: "명사" },
+            { word: "warrant", meaning: "영장", type: "명사" }
+        ]
+    },
+    cooking: {
+        name: "요리 음식",
+        icon: "🍳",
+        words: [
+            { word: "bake", meaning: "굽다", type: "동사" },
+            { word: "boil", meaning: "끓이다", type: "동사" },
+            { word: "chop", meaning: "썰다", type: "동사" },
+            { word: "dice", meaning: "깍둑썰기하다", type: "동사" },
+            { word: "fry", meaning: "튀기다", type: "동사" },
+            { word: "grill", meaning: "굽다", type: "동사" },
+            { word: "marinate", meaning: "재우다", type: "동사" },
+            { word: "mince", meaning: "다지다", type: "동사" },
+            { word: "roast", meaning: "구워내다", type: "동사" },
+            { word: "sauté", meaning: "볶다", type: "동사" },
+            { word: "simmer", meaning: "약하게 끓이다", type: "동사" },
+            { word: "steam", meaning: "찌다", type: "동사" },
+            { word: "stir", meaning: "젓다", type: "동사" },
+            { word: "whisk", meaning: "휘젓다", type: "동사" },
+            { word: "blend", meaning: "섞다", type: "동사" },
+            { word: "ingredient", meaning: "재료", type: "명사" },
+            { word: "recipe", meaning: "조리법", type: "명사" },
+            { word: "seasoning", meaning: "양념", type: "명사" },
+            { word: "spice", meaning: "향신료", type: "명사" },
+            { word: "flavor", meaning: "맛", type: "명사" },
+            { word: "appetizer", meaning: "전채요리", type: "명사" },
+            { word: "dessert", meaning: "디저트", type: "명사" },
+            { word: "cuisine", meaning: "요리", type: "명사" },
+            { word: "garnish", meaning: "고명", type: "명사" },
+            { word: "portion", meaning: "분량", type: "명사" },
+            { word: "texture", meaning: "식감", type: "명사" },
+            { word: "aroma", meaning: "향", type: "명사" },
+            { word: "crispy", meaning: "바삭한", type: "형용사" },
+            { word: "tender", meaning: "부드러운", type: "형용사" },
+            { word: "spicy", meaning: "매운", type: "형용사" },
+            { word: "sweet", meaning: "단", type: "형용사" },
+            { word: "sour", meaning: "신", type: "형용사" },
+            { word: "bitter", meaning: "쓴", type: "형용사" },
+            { word: "salty", meaning: "짠", type: "형용사" },
+            { word: "fresh", meaning: "신선한", type: "형용사" },
+            { word: "organic", meaning: "유기농의", type: "형용사" },
+            { word: "processed", meaning: "가공된", type: "형용사" },
+            { word: "homemade", meaning: "집에서 만든", type: "형용사" },
+            { word: "nutritious", meaning: "영양가 있는", type: "형용사" },
+            { word: "delicious", meaning: "맛있는", type: "형용사" }
+        ]
+    },
+    sports: {
+        name: "스포츠 운동",
+        icon: "⚽",
+        words: [
+            { word: "athlete", meaning: "운동선수", type: "명사" },
+            { word: "coach", meaning: "코치", type: "명사" },
+            { word: "team", meaning: "팀", type: "명사" },
+            { word: "match", meaning: "경기", type: "명사" },
+            { word: "tournament", meaning: "토너먼트", type: "명사" },
+            { word: "championship", meaning: "선수권대회", type: "명사" },
+            { word: "victory", meaning: "승리", type: "명사" },
+            { word: "defeat", meaning: "패배", type: "명사" },
+            { word: "score", meaning: "점수", type: "명사" },
+            { word: "goal", meaning: "골", type: "명사" },
+            { word: "referee", meaning: "심판", type: "명사" },
+            { word: "stadium", meaning: "경기장", type: "명사" },
+            { word: "training", meaning: "훈련", type: "명사" },
+            { word: "exercise", meaning: "운동", type: "명사" },
+            { word: "fitness", meaning: "체력", type: "명사" },
+            { word: "competition", meaning: "경쟁", type: "명사" },
+            { word: "opponent", meaning: "상대", type: "명사" },
+            { word: "strategy", meaning: "전략", type: "명사" },
+            { word: "technique", meaning: "기술", type: "명사" },
+            { word: "performance", meaning: "성과", type: "명사" },
+            { word: "medal", meaning: "메달", type: "명사" },
+            { word: "record", meaning: "기록", type: "명사" },
+            { word: "equipment", meaning: "장비", type: "명사" },
+            { word: "uniform", meaning: "유니폼", type: "명사" },
+            { word: "captain", meaning: "주장", type: "명사" },
+            { word: "substitute", meaning: "교체선수", type: "명사" },
+            { word: "penalty", meaning: "페널티", type: "명사" },
+            { word: "foul", meaning: "반칙", type: "명사" },
+            { word: "offside", meaning: "오프사이드", type: "명사" },
+            { word: "timeout", meaning: "타임아웃", type: "명사" },
+            { word: "sprint", meaning: "단거리 달리기", type: "명사" },
+            { word: "marathon", meaning: "마라톤", type: "명사" },
+            { word: "endurance", meaning: "지구력", type: "명사" },
+            { word: "strength", meaning: "힘", type: "명사" },
+            { word: "agility", meaning: "민첩성", type: "명사" },
+            { word: "flexibility", meaning: "유연성", type: "명사" },
+            { word: "coordination", meaning: "조정력", type: "명사" },
+            { word: "balance", meaning: "균형", type: "명사" },
+            { word: "professional", meaning: "프로의", type: "형용사" },
+            { word: "amateur", meaning: "아마추어의", type: "형용사" }
+        ]
     }
 };
 
@@ -289,6 +473,7 @@ class VocabularyQuiz {
         this.selectedChoice = null;
         this.autoAdvanceEnabled = false;
         this.autoAdvanceTimeout = null;
+        this.typingMode = false;
         
         // Challenge mode properties
         this.challengeMode = false;
@@ -544,6 +729,15 @@ class VocabularyQuiz {
         this.feedbackElement.textContent = '';
         this.feedbackElement.className = 'feedback';
         this.nextBtn.style.display = 'none';
+        
+        // Reset typing mode state for loadReviewWord
+        if (this.typingMode) {
+            this.typingInput.value = '';
+            this.typingInput.disabled = false;
+            this.submitTypingBtn.disabled = false;
+            this.typingInput.style.borderColor = '';
+            this.typingInput.focus();
+        }
         
         // Update question progress counter
         this.updateQuestionProgress();
@@ -1526,6 +1720,12 @@ class VocabularyQuiz {
         this.autoAdvanceToggle = document.getElementById('autoAdvanceToggle');
         this.questionProgress = document.getElementById('questionProgress');
         
+        // Typing mode elements
+        this.typingModeToggle = document.getElementById('typingModeToggle');
+        this.typingSection = document.getElementById('typingSection');
+        this.typingInput = document.getElementById('typingInput');
+        this.submitTypingBtn = document.getElementById('submitTypingBtn');
+        
         // Statistics dashboard elements
         this.statsBtn = document.getElementById('statsBtn');
         this.statsDashboard = document.getElementById('statsDashboard');
@@ -1605,6 +1805,20 @@ class VocabularyQuiz {
         this.pronunciationBtn.addEventListener('click', () => this.pronounceWord());
         this.autoAdvanceToggle.addEventListener('change', (e) => {
             this.autoAdvanceEnabled = e.target.checked;
+        });
+        
+        // Typing mode events
+        this.typingModeToggle.addEventListener('change', (e) => {
+            this.typingMode = e.target.checked;
+            this.toggleTypingMode();
+        });
+        
+        this.submitTypingBtn.addEventListener('click', () => this.submitTypingAnswer());
+        
+        this.typingInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.submitTypingAnswer();
+            }
         });
         
         // Statistics dashboard events
@@ -1875,6 +2089,15 @@ class VocabularyQuiz {
         this.feedbackElement.className = 'feedback';
         this.nextBtn.style.display = 'none';
         
+        // Reset typing mode state for loadNewWord
+        if (this.typingMode) {
+            this.typingInput.value = '';
+            this.typingInput.disabled = false;
+            this.submitTypingBtn.disabled = false;
+            this.typingInput.style.borderColor = '';
+            this.typingInput.focus();
+        }
+        
         // Update question progress counter
         this.updateQuestionProgress();
         this.updateQuizProgress();
@@ -1939,6 +2162,130 @@ class VocabularyQuiz {
     showFeedback(message, type) {
         this.feedbackElement.textContent = message;
         this.feedbackElement.className = `feedback ${type}`;
+    }
+    
+    toggleTypingMode() {
+        if (this.typingMode) {
+            this.choicesSection.style.display = 'none';
+            this.typingSection.style.display = 'block';
+            this.typingInput.focus();
+        } else {
+            this.choicesSection.style.display = 'block';
+            this.typingSection.style.display = 'none';
+        }
+        
+        // Reset current question state when switching modes
+        if (this.currentTheme) {
+            this.resetCurrentQuestion();
+        }
+    }
+    
+    resetCurrentQuestion() {
+        this.selectedChoice = null;
+        this.typingInput.value = '';
+        this.feedbackElement.textContent = '';
+        this.feedbackElement.className = 'feedback';
+        this.nextBtn.style.display = 'none';
+        
+        // Clear choice selections if in choice mode
+        if (!this.typingMode) {
+            for (let i = 0; i < 4; i++) {
+                const choiceItem = document.querySelector(`[data-choice="${i}"]`);
+                if (choiceItem) {
+                    choiceItem.classList.remove('correct', 'incorrect', 'selected');
+                }
+            }
+        }
+    }
+    
+    submitTypingAnswer() {
+        if (this.selectedChoice !== null) return;
+        
+        const userAnswer = this.typingInput.value.trim().toLowerCase();
+        if (!userAnswer) {
+            this.showFeedback('답안을 입력해주세요.', 'incorrect');
+            return;
+        }
+        
+        this.selectedChoice = 0; // Mark as answered
+        this.totalQuestions++;
+        
+        // Record actual study time for this question
+        if (this.sessionStats.questionStartTime) {
+            const questionTime = Date.now() - this.sessionStats.questionStartTime;
+            this.sessionStats.actualStudyTime += questionTime;
+        }
+        
+        // Get the correct answer
+        const correctAnswer = this.reviewMode ? 
+            this.reviewWords[this.currentWordIndex].meaning : 
+            vocabularyThemes[this.currentTheme].words[this.currentWordIndex].meaning;
+        
+        // Check if answer is correct (allow for variations)
+        const isCorrect = this.checkTypingAnswer(userAnswer, correctAnswer);
+        
+        if (isCorrect) {
+            this.correctAnswers++;
+            this.showFeedback('정답입니다! 🎉', 'correct');
+            this.typingInput.style.borderColor = 'var(--correct-color)';
+        } else {
+            // Track wrong answer for review
+            this.trackWrongAnswer();
+            this.showFeedback(`틀렸습니다. 😔 정답: ${correctAnswer}`, 'incorrect');
+            this.typingInput.style.borderColor = 'var(--incorrect-color)';
+        }
+        
+        this.updateScore();
+        this.nextBtn.style.display = 'inline-block';
+        
+        // Disable input after submission
+        this.typingInput.disabled = true;
+        this.submitTypingBtn.disabled = true;
+        
+        // Auto advance after 2 seconds if enabled
+        if (this.autoAdvanceEnabled) {
+            this.autoAdvanceTimeout = setTimeout(() => {
+                this.nextWord();
+            }, 2000);
+        }
+    }
+    
+    checkTypingAnswer(userAnswer, correctAnswer) {
+        // Normalize both answers for comparison
+        const normalizeAnswer = (answer) => {
+            return answer.toLowerCase()
+                .trim()
+                .replace(/[.,;:!?'"()]/g, '') // Remove punctuation
+                .replace(/\s+/g, ' '); // Normalize spaces
+        };
+        
+        const normalizedUser = normalizeAnswer(userAnswer);
+        const normalizedCorrect = normalizeAnswer(correctAnswer);
+        
+        // Exact match
+        if (normalizedUser === normalizedCorrect) {
+            return true;
+        }
+        
+        // Check if user answer contains the key words (for multi-word meanings)
+        const correctWords = normalizedCorrect.split(' ');
+        if (correctWords.length > 1) {
+            // For multi-word answers, check if user got at least 80% of the words right
+            const userWords = normalizedUser.split(' ');
+            const matches = correctWords.filter(word => 
+                userWords.some(userWord => 
+                    userWord.includes(word) || word.includes(userWord)
+                )
+            );
+            return matches.length >= Math.ceil(correctWords.length * 0.8);
+        }
+        
+        // For single words, allow partial matches if the word is long enough
+        if (normalizedCorrect.length >= 3) {
+            return normalizedUser.includes(normalizedCorrect) || normalizedCorrect.includes(normalizedUser);
+        }
+        
+        return false;
     }
     
     nextWord() {
@@ -2487,12 +2834,71 @@ function initializeApp() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initializeApp);
+// Dark mode functionality
+class ThemeManager {
+    constructor() {
+        this.initializeTheme();
+        this.setupEventListeners();
+    }
+    
+    initializeTheme() {
+        // Check for saved theme preference or default to light mode
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        this.setTheme(savedTheme);
+    }
+    
+    setupEventListeners() {
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
+    }
+    
+    setTheme(theme) {
+        const body = document.body;
+        const themeIcon = document.querySelector('.theme-icon');
+        
+        if (theme === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            if (themeIcon) themeIcon.textContent = '☀️';
+        } else {
+            body.removeAttribute('data-theme');
+            if (themeIcon) themeIcon.textContent = '🌙';
+        }
+        
+        // Save theme preference
+        localStorage.setItem('theme', theme);
+    }
+    
+    toggleTheme() {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        this.setTheme(newTheme);
+    }
+    
+    getCurrentTheme() {
+        return document.body.getAttribute('data-theme') || 'light';
+    }
+}
+
+// Initialize theme manager
+let themeManager;
+
+document.addEventListener('DOMContentLoaded', () => {
+    themeManager = new ThemeManager();
+    initializeApp();
+});
 
 // Backup initialization for older browsers
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeApp);
+    document.addEventListener('DOMContentLoaded', () => {
+        themeManager = new ThemeManager();
+        initializeApp();
+    });
 } else {
     // DOM is already loaded
-    setTimeout(initializeApp, 10);
+    setTimeout(() => {
+        themeManager = new ThemeManager();
+        initializeApp();
+    }, 10);
 }

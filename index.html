@@ -14,7 +14,12 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>🎯 영어 단어 마스터</h1>
+            <div class="header-top">
+                <h1>🎯 영어 단어 마스터</h1>
+                <button class="theme-toggle-btn" id="themeToggle">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
             <div class="version-badge">v3.4.3</div>
             <div class="score-board">
                 <div class="score-item">
@@ -126,6 +131,13 @@
                         </label>
                         <span class="toggle-label">자동 진행</span>
                     </div>
+                    <div class="typing-mode-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="typingModeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">타이핑 모드</span>
+                    </div>
                 </div>
             </div>
 
@@ -158,6 +170,14 @@
                 <div class="choice-item" data-choice="3">
                     <span class="choice-letter">D</span>
                     <span class="choice-text" id="choice3"></span>
+                </div>
+            </div>
+
+            <div class="typing-section" id="typingSection" style="display: none;">
+                <div class="typing-input-container">
+                    <label for="typingInput" class="typing-label">영어 단어의 한국어 뜻을 입력하세요:</label>
+                    <input type="text" id="typingInput" class="typing-input" placeholder="답안을 입력하세요..." autocomplete="off">
+                    <button id="submitTypingBtn" class="submit-typing-btn">답안 제출</button>
                 </div>
             </div>
 
