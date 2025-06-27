@@ -1818,6 +1818,8 @@ class VocabularyQuiz {
         
         this.typingInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
                 this.submitTypingAnswer();
             }
         });
@@ -2239,13 +2241,8 @@ class VocabularyQuiz {
         } else {
             // Track wrong answer for review
             this.trackWrongAnswer();
-            this.showFeedback(`틀렸습니다. 😔\n정답: ${correctAnswer}`, 'incorrect');
+            this.showFeedback(`❌ 틀렸습니다!\n\n✅ 정답: ${correctAnswer}`, 'incorrect');
             this.typingInput.style.borderColor = 'var(--incorrect-color)';
-            
-            // Highlight the correct answer more prominently
-            setTimeout(() => {
-                this.showFeedback(`❌ 틀렸습니다!\n\n✅ 정답: ${correctAnswer}\n\n입력하신 답: "${userAnswer}"`, 'incorrect');
-            }, 100);
         }
         
         this.updateScore();

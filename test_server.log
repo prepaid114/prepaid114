@@ -1,20 +1,129 @@
-127.0.0.1 - - [26/Jun/2025 22:37:05] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [26/Jun/2025 22:37:05] "GET /style.css HTTP/1.1" 200 -
-127.0.0.1 - - [26/Jun/2025 22:37:05] "GET /script.js HTTP/1.1" 200 -
-127.0.0.1 - - [26/Jun/2025 22:37:05] code 404, message File not found
-127.0.0.1 - - [26/Jun/2025 22:37:05] "GET /favicon.ico HTTP/1.1" 404 -
-127.0.0.1 - - [26/Jun/2025 22:37:08] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [26/Jun/2025 22:39:46] code 404, message File not found
-127.0.0.1 - - [26/Jun/2025 22:39:46] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
-127.0.0.1 - - [26/Jun/2025 22:39:47] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [26/Jun/2025 22:39:47] code 404, message File not found
-127.0.0.1 - - [26/Jun/2025 22:39:47] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
-127.0.0.1 - - [26/Jun/2025 22:39:47] "GET /script.js HTTP/1.1" 200 -
-127.0.0.1 - - [26/Jun/2025 22:39:48] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [26/Jun/2025 22:39:48] code 404, message File not found
-127.0.0.1 - - [26/Jun/2025 22:39:48] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
-127.0.0.1 - - [26/Jun/2025 22:39:48] "GET /script.js HTTP/1.1" 304 -
-127.0.0.1 - - [26/Jun/2025 22:41:41] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [26/Jun/2025 22:41:41] code 404, message File not found
-127.0.0.1 - - [26/Jun/2025 22:41:41] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
-127.0.0.1 - - [26/Jun/2025 22:41:41] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:30:50] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [27/Jun/2025 21:30:50] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:30:50] "GET /firebase-config.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Jun/2025 21:30:50] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:30:50] "GET /leaderboard.js HTTP/1.1" 304 -
+127.0.0.1 - - [27/Jun/2025 21:32:07] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:32:13] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:33:22] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:33:48] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:33:48] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:33:48] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:33:48] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:33:48] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:33:49] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:33:49] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:35:10] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:35:10] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:35:11] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:35:11] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:35:11] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:35:11] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:35:11] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:37:22] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:37:22] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:37:23] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:37:23] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:37:23] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:37:23] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:37:23] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:38:42] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:38:42] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:38:42] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:38:42] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:38:42] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:38:43] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:38:43] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:39:22] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:39:59] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:39:59] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:40:00] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:40:00] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:40:00] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:40:39] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:40:39] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:42:45] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:42:45] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:42:45] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:42:45] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:42:45] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:42:45] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:42:45] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:44:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:44:50] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:44:50] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:44:50] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:44:50] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:44:51] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:44:51] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:45:00] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:01] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:01] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:01] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:01] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:01] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:45:01] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:45:54] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:54] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:54] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:54] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:54] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:45:55] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:45:55] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:47:12] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:16] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:55] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:55] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:55] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:17] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:48:17] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:48:23] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:23] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:23] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:23] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:23] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:48:23] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:48:23] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:49:19] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:49:19] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:49:19] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:49:19] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:49:19] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:49:20] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:49:20] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:50:47] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:50:47] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:50:47] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:50:47] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:50:47] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:50:48] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:50:48] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:51:43] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:51:43] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:51:43] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:51:43] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:51:43] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:51:44] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:51:44] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:52:13] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:52:13] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:52:13] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:52:13] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:52:13] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:52:14] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:52:14] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:53:10] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:10] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:10] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:10] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:10] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:11] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:53:11] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Jun/2025 21:53:49] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:50] "GET /style.css HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:50] "GET /leaderboard.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:50] "GET /script.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:50] "GET /firebase-config.js HTTP/1.1" 200 -
+127.0.0.1 - - [27/Jun/2025 21:53:51] code 404, message File not found
+127.0.0.1 - - [27/Jun/2025 21:53:51] "GET /favicon.ico HTTP/1.1" 404 -
