@@ -1367,3 +1367,288 @@ input:checked + .toggle-slider:before {
         text-align: center;
     }
 }
+
+/* Leaderboard Styles */
+.action-btn.leaderboard {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #333;
+    font-weight: 600;
+}
+
+.action-btn.leaderboard:hover {
+    background: linear-gradient(135deg, #ffed4e, #fff176);
+    transform: translateY(-2px);
+}
+
+/* Nickname Modal Styles */
+.nickname-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.nickname-header h2 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 1.4em;
+}
+
+.nickname-header p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.nickname-form {
+    margin-bottom: 20px;
+}
+
+.nickname-form input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.nickname-form input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85em;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+}
+
+.status-dot.online {
+    background: #4CAF50;
+}
+
+.status-dot.offline {
+    background: #f44336;
+}
+
+.nickname-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Leaderboard Modal Styles */
+.leaderboard-content {
+    max-width: 500px;
+    max-height: 80vh;
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+}
+
+.leaderboard-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.leaderboard-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    color: #4CAF50;
+    border-bottom-color: #4CAF50;
+    font-weight: 600;
+}
+
+.tab-btn:hover {
+    background: #f8f8f8;
+}
+
+.leaderboard-content-area {
+    min-height: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.leaderboard-item.current-user {
+    background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+    border-color: #4CAF50;
+}
+
+.leaderboard-rank {
+    font-weight: bold;
+    color: #666;
+    min-width: 30px;
+    text-align: center;
+}
+
+.leaderboard-rank.gold { color: #ffd700; }
+.leaderboard-rank.silver { color: #c0c0c0; }
+.leaderboard-rank.bronze { color: #cd7f32; }
+
+.leaderboard-info {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.leaderboard-nickname {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.leaderboard-stats {
+    font-size: 0.8em;
+    color: #666;
+}
+
+.leaderboard-score {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.leaderboard-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.connection-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85em;
+    color: #666;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.personal-stats {
+    padding: 20px;
+}
+
+.personal-stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.personal-stat-item:last-child {
+    border-bottom: none;
+}
+
+.personal-stat-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.personal-stat-value {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .leaderboard-content {
+        max-width: 95vw;
+        margin: 20px;
+    }
+    
+    .leaderboard-item {
+        padding: 10px;
+    }
+    
+    .leaderboard-info {
+        margin-left: 10px;
+    }
+    
+    .nickname-actions {
+        flex-direction: column;
+    }
+    
+    .nickname-actions button {
+        width: 100%;
+    }
+}
