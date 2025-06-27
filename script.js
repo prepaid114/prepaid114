@@ -2318,14 +2318,41 @@ class VocabularyQuiz {
             const rank = index + 1;
             const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
             
+            // 가장 최근에 플레이한 테마 찾기
+            let recentTheme = '테마';
+            let recentAccuracy = entry.averageAccuracy || 0;
+            
+            if (entry.themes) {
+                const themeEntries = Object.entries(entry.themes);
+                if (themeEntries.length > 0) {
+                    // 가장 높은 점수를 받은 테마 찾기
+                    const bestThemeEntry = themeEntries.reduce((best, current) => {
+                        return current[1].bestScore > (best[1].bestScore || 0) ? current : best;
+                    });
+                    
+                    // 테마 이름을 한글로 변환
+                    const themeNames = {
+                        'business': '비즈니스',
+                        'science': '과학기술', 
+                        'travel': '여행교통',
+                        'daily': '일상생활',
+                        'academic': '학문교육',
+                        'it': 'IT컴퓨터'
+                    };
+                    
+                    recentTheme = themeNames[bestThemeEntry[0]] || bestThemeEntry[0];
+                    recentAccuracy = bestThemeEntry[1].lastAccuracy || recentAccuracy;
+                }
+            }
+            
             return `
                 <div class="leaderboard-item">
                     <div class="leaderboard-rank ${rankClass}">${rank}</div>
                     <div class="leaderboard-info">
                         <div class="leaderboard-nickname">${entry.nickname}</div>
-                        <div class="leaderboard-stats">${entry.theme || '테마'} • ${entry.accuracy || 0}% 정확도</div>
+                        <div class="leaderboard-stats">${recentTheme} • ${recentAccuracy}% 정확도</div>
                     </div>
-                    <div class="leaderboard-score">${entry.score || entry.bestScore}점</div>
+                    <div class="leaderboard-score">${entry.bestScore}점</div>
                 </div>
             `;
         }).join('');
