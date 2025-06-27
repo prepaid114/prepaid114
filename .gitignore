@@ -16,4 +16,4 @@ KakaoTalk_*.jpg
 # 기타 임시 파일
 *.tmp
 *.temp
-.DS_Store
+.DS_Store*:Zone.Identifier
