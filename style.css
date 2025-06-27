@@ -113,12 +113,16 @@ body {
 }
 
 .selector-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header-buttons {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    gap: 15px;
     margin-bottom: 30px;
     flex-wrap: wrap;
-    gap: 15px;
 }
 
 .stats-btn {
@@ -137,6 +141,16 @@ body {
 .stats-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(78, 205, 196, 0.4);
+}
+
+#leaderboardBtn {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #333;
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+}
+
+#leaderboardBtn:hover {
+    box-shadow: 0 6px 12px rgba(255, 215, 0, 0.4);
 }
 
 .theme-selector h2 {

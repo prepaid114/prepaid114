@@ -1538,6 +1538,7 @@ class VocabularyQuiz {
         this.copyLinkBtn = document.getElementById('copyLinkBtn');
         
         // Leaderboard elements
+        this.leaderboardBtn = document.getElementById('leaderboardBtn');
         this.saveToLeaderboardBtn = document.getElementById('saveToLeaderboardBtn');
         this.nicknameModal = document.getElementById('nicknameModal');
         this.leaderboardModal = document.getElementById('leaderboardModal');
@@ -1609,6 +1610,11 @@ class VocabularyQuiz {
         // Statistics dashboard events
         this.statsBtn.addEventListener('click', () => this.showStatsDashboard());
         this.closeStatsBtn.addEventListener('click', () => this.hideStatsDashboard());
+        
+        // Leaderboard button event
+        if (this.leaderboardBtn) {
+            this.leaderboardBtn.addEventListener('click', () => this.showLeaderboard());
+        }
         
         // Social feature events
         this.shareStatsBtn.addEventListener('click', () => this.shareStats());
@@ -2208,6 +2214,32 @@ class VocabularyQuiz {
             console.error('Error saving to leaderboard:', error);
             this.hideNicknameModal();
             alert('점수 저장 중 오류가 발생했습니다.');
+        }
+    }
+    
+    // Leaderboard display method
+    async showLeaderboard() {
+        console.log('showLeaderboard called');
+        
+        // Initialize leaderboard manager if needed
+        if (!window.leaderboardManager) {
+            console.warn('Leaderboard manager not initialized');
+            this.showToast('리더보드 시스템이 초기화되지 않았습니다.');
+            return;
+        }
+        
+        try {
+            // Initialize Firebase connection
+            console.log('Initializing Firebase connection...');
+            const isOnline = await window.leaderboardManager.initialize();
+            console.log('Firebase initialization result:', isOnline);
+            console.log('isConnected check:', window.leaderboardManager.isConnected());
+            
+            // Show leaderboard modal directly
+            this.showLeaderboardModal();
+        } catch (error) {
+            console.error('Error showing leaderboard:', error);
+            this.showToast('리더보드를 불러오는 중 오류가 발생했습니다.');
         }
     }
     
