@@ -269,6 +269,15 @@ body {
     box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
 }
 
+[data-theme="dark"] .theme-card {
+    background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+    box-shadow: 0 8px 16px rgba(30, 64, 175, 0.3);
+}
+
+[data-theme="dark"] .theme-card:hover {
+    box-shadow: 0 15px 30px rgba(30, 64, 175, 0.4);
+}
+
 .theme-card.business {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
     box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
@@ -276,6 +285,15 @@ body {
 
 .theme-card.business:hover {
     box-shadow: 0 15px 30px rgba(255, 107, 107, 0.4);
+}
+
+[data-theme="dark"] .theme-card.business {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="dark"] .theme-card.business:hover {
+    box-shadow: 0 15px 30px rgba(220, 38, 38, 0.4);
 }
 
 .theme-card.science {
@@ -287,6 +305,15 @@ body {
     box-shadow: 0 15px 30px rgba(78, 205, 196, 0.4);
 }
 
+[data-theme="dark"] .theme-card.science {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+    box-shadow: 0 8px 16px rgba(15, 118, 110, 0.3);
+}
+
+[data-theme="dark"] .theme-card.science:hover {
+    box-shadow: 0 15px 30px rgba(15, 118, 110, 0.4);
+}
+
 .theme-card.travel {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3);
@@ -296,15 +323,34 @@ body {
     box-shadow: 0 15px 30px rgba(240, 147, 251, 0.4);
 }
 
+[data-theme="dark"] .theme-card.travel {
+    background: linear-gradient(135deg, #be185d 0%, #be123c 100%);
+    box-shadow: 0 8px 16px rgba(190, 24, 93, 0.3);
+}
+
+[data-theme="dark"] .theme-card.travel:hover {
+    box-shadow: 0 15px 30px rgba(190, 24, 93, 0.4);
+}
+
 .theme-card.daily {
     background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
     box-shadow: 0 8px 16px rgba(168, 237, 234, 0.3);
-    color: var(--text-primary);
+    color: #2d3748;
     transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .theme-card.daily {
+    background: linear-gradient(135deg, #2d5a87 0%, #8b5a87 100%);
+    box-shadow: 0 8px 16px rgba(45, 90, 135, 0.3);
+    color: #ecf0f1;
 }
 
 .theme-card.daily:hover {
     box-shadow: 0 15px 30px rgba(168, 237, 234, 0.4);
+}
+
+[data-theme="dark"] .theme-card.daily:hover {
+    box-shadow: 0 15px 30px rgba(45, 90, 135, 0.4);
 }
 
 .theme-card.technology {
@@ -314,6 +360,110 @@ body {
 
 .theme-card.technology:hover {
     box-shadow: 0 15px 30px rgba(255, 154, 86, 0.4);
+}
+
+[data-theme="dark"] .theme-card.technology {
+    background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+    box-shadow: 0 8px 16px rgba(194, 65, 12, 0.3);
+}
+
+[data-theme="dark"] .theme-card.technology:hover {
+    box-shadow: 0 15px 30px rgba(194, 65, 12, 0.4);
+}
+
+/* Academic Theme */
+.theme-card.academic {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.theme-card.academic:hover {
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+}
+
+[data-theme="dark"] .theme-card.academic {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+    box-shadow: 0 8px 16px rgba(30, 58, 138, 0.3);
+}
+
+[data-theme="dark"] .theme-card.academic:hover {
+    box-shadow: 0 15px 30px rgba(30, 58, 138, 0.4);
+}
+
+/* Medical Theme */
+.theme-card.medical {
+    background: linear-gradient(135deg, #48cae4 0%, #0096c7 100%);
+    box-shadow: 0 8px 16px rgba(72, 202, 228, 0.3);
+}
+
+.theme-card.medical:hover {
+    box-shadow: 0 15px 30px rgba(72, 202, 228, 0.4);
+}
+
+[data-theme="dark"] .theme-card.medical {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    box-shadow: 0 8px 16px rgba(30, 58, 138, 0.3);
+}
+
+[data-theme="dark"] .theme-card.medical:hover {
+    box-shadow: 0 15px 30px rgba(30, 58, 138, 0.4);
+}
+
+/* Legal Theme */
+.theme-card.legal {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+}
+
+.theme-card.legal:hover {
+    box-shadow: 0 15px 30px rgba(139, 92, 246, 0.4);
+}
+
+[data-theme="dark"] .theme-card.legal {
+    background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%);
+    box-shadow: 0 8px 16px rgba(76, 29, 149, 0.3);
+}
+
+[data-theme="dark"] .theme-card.legal:hover {
+    box-shadow: 0 15px 30px rgba(76, 29, 149, 0.4);
+}
+
+/* Cooking Theme */
+.theme-card.cooking {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    box-shadow: 0 8px 16px rgba(251, 146, 60, 0.3);
+}
+
+.theme-card.cooking:hover {
+    box-shadow: 0 15px 30px rgba(251, 146, 60, 0.4);
+}
+
+[data-theme="dark"] .theme-card.cooking {
+    background: linear-gradient(135deg, #9a3412 0%, #c2410c 100%);
+    box-shadow: 0 8px 16px rgba(154, 52, 18, 0.3);
+}
+
+[data-theme="dark"] .theme-card.cooking:hover {
+    box-shadow: 0 15px 30px rgba(154, 52, 18, 0.4);
+}
+
+/* Sports Theme */
+.theme-card.sports {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+}
+
+.theme-card.sports:hover {
+    box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+}
+
+[data-theme="dark"] .theme-card.sports {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    box-shadow: 0 8px 16px rgba(6, 78, 59, 0.3);
+}
+
+[data-theme="dark"] .theme-card.sports:hover {
+    box-shadow: 0 15px 30px rgba(6, 78, 59, 0.4);
 }
 
 .theme-icon {
