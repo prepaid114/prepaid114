@@ -1,0 +1,22 @@
+# Firebase 설정 파일 (실제 API 키 포함)
+firebase-config.js
+
+# 서버 로그
+server.log
+
+# 스크린샷 및 임시 파일
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# 카카오톡 스크린샷
+KakaoTalk_*.jpg
+
+# Windows 파일
+*.Zone.Identifier
+
+# 기타 임시 파일
+*.tmp
+*.temp
+.DS_Store
