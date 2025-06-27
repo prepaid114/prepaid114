@@ -2851,6 +2851,19 @@ class ThemeManager {
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {
             themeToggle.addEventListener('click', () => this.toggleTheme());
+            console.log('Theme toggle event listener added successfully');
+        } else {
+            console.warn('Theme toggle button not found');
+            // Try again after a short delay
+            setTimeout(() => {
+                const themeToggle = document.getElementById('themeToggle');
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', () => this.toggleTheme());
+                    console.log('Theme toggle event listener added successfully (delayed)');
+                } else {
+                    console.error('Theme toggle button still not found after delay');
+                }
+            }, 100);
         }
     }
     
@@ -2858,21 +2871,35 @@ class ThemeManager {
         const body = document.body;
         const themeIcon = document.querySelector('.theme-icon');
         
+        console.log('Setting theme to:', theme);
+        
         if (theme === 'dark') {
             body.setAttribute('data-theme', 'dark');
-            if (themeIcon) themeIcon.textContent = '☀️';
+            if (themeIcon) {
+                themeIcon.textContent = '☀️';
+                console.log('Set icon to sun (dark mode)');
+            } else {
+                console.warn('Theme icon not found for dark mode');
+            }
         } else {
             body.removeAttribute('data-theme');
-            if (themeIcon) themeIcon.textContent = '🌙';
+            if (themeIcon) {
+                themeIcon.textContent = '🌙';
+                console.log('Set icon to moon (light mode)');
+            } else {
+                console.warn('Theme icon not found for light mode');
+            }
         }
         
         // Save theme preference
         localStorage.setItem('theme', theme);
+        console.log('Theme saved to localStorage:', theme);
     }
     
     toggleTheme() {
         const currentTheme = document.body.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        console.log('Toggling theme from', currentTheme || 'light', 'to', newTheme);
         this.setTheme(newTheme);
     }
     
@@ -2884,21 +2911,23 @@ class ThemeManager {
 // Initialize theme manager
 let themeManager;
 
-document.addEventListener('DOMContentLoaded', () => {
+function initializeThemeManager() {
+    console.log('Initializing ThemeManager...');
     themeManager = new ThemeManager();
+    console.log('ThemeManager initialized successfully');
+}
+
+function initializeComplete() {
+    initializeThemeManager();
     initializeApp();
-});
+}
+
+document.addEventListener('DOMContentLoaded', initializeComplete);
 
 // Backup initialization for older browsers
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        themeManager = new ThemeManager();
-        initializeApp();
-    });
+    document.addEventListener('DOMContentLoaded', initializeComplete);
 } else {
     // DOM is already loaded
-    setTimeout(() => {
-        themeManager = new ThemeManager();
-        initializeApp();
-    }, 10);
+    setTimeout(initializeComplete, 10);
 }
