@@ -310,12 +310,39 @@
                 </div>
                 <div class="leaderboard-tabs">
                     <button class="tab-btn active" data-tab="global">전체 순위</button>
+                    <button class="tab-btn" data-tab="total">통합 랭킹</button>
+                    <button class="tab-btn" data-tab="theme">테마별 순위</button>
                     <button class="tab-btn" data-tab="personal">내 기록</button>
                 </div>
                 <div class="leaderboard-content-area">
                     <div class="tab-content active" id="globalTab">
                         <div class="leaderboard-list" id="globalLeaderboard">
                             <div class="loading">로딩 중...</div>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="totalTab">
+                        <div class="leaderboard-list" id="totalRankingLeaderboard">
+                            <div class="loading">로딩 중...</div>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="themeTab">
+                        <div class="theme-selector">
+                            <select id="themeSelectDropdown">
+                                <option value="">테마를 선택하세요</option>
+                                <option value="business">비즈니스 영어</option>
+                                <option value="science">과학 기술</option>
+                                <option value="travel">여행 회화</option>
+                                <option value="daily">일상 생활</option>
+                                <option value="education">교육 학습</option>
+                                <option value="technology">IT 기술</option>
+                                <option value="medical">의료 건강</option>
+                                <option value="legal">법률 용어</option>
+                                <option value="cooking">요리 음식</option>
+                                <option value="sports">스포츠 운동</option>
+                            </select>
+                        </div>
+                        <div class="leaderboard-list" id="themeLeaderboard">
+                            <div class="placeholder">테마를 선택하여 순위를 확인하세요</div>
                         </div>
                     </div>
                     <div class="tab-content" id="personalTab">

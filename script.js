@@ -96,6 +96,9 @@ class AuthManager {
                     }
                 };
                 
+                // Clear any existing localStorage for new user
+                this.clearUserProgress();
+                
                 // Save initial user data
                 await userRef.set({
                     nickname: this.currentUser.nickname,
@@ -110,7 +113,13 @@ class AuthManager {
             
             // Initialize the main app
             if (window.initializeApp) {
-                setTimeout(() => window.initializeApp(), 100);
+                setTimeout(() => {
+                    window.initializeApp();
+                    // For new users, ensure clean progress state
+                    if (window.vocabApp && this.currentUser.createdAt > Date.now() - 60000) {
+                        window.vocabApp.userProgress = window.vocabApp.loadUserProgress();
+                    }
+                }, 100);
             }
             
         } catch (error) {
@@ -1257,6 +1266,30 @@ class VocabularyQuiz {
             localStorage.setItem('vocabularyQuizProgress', JSON.stringify(this.userProgress));
         } catch (error) {
             console.warn('Could not save user progress:', error);
+        }
+    }
+    
+    clearUserProgress() {
+        try {
+            // Clear localStorage
+            localStorage.removeItem('vocabularyQuizProgress');
+            
+            // Reset userProgress to initial state
+            this.userProgress = {
+                completedThemes: {},
+                totalWordsLearned: 0,
+                bestScores: {},
+                learningStreak: 0,
+                lastPlayDate: null,
+                wrongAnswers: {},
+                totalSessionTime: 0,
+                learnedWords: [],
+                actualStudyTime: 0
+            };
+            
+            console.log('User progress cleared for new user');
+        } catch (error) {
+            console.warn('Could not clear user progress:', error);
         }
     }
     
@@ -2543,7 +2576,7 @@ class VocabularyQuiz {
         
         // Leaderboard events
         if (this.saveToLeaderboardBtn) {
-            this.saveToLeaderboardBtn.addEventListener('click', () => this.showNicknameModal());
+            this.saveToLeaderboardBtn.addEventListener('click', () => this.saveToLeaderboard());
         }
         
         if (this.saveNicknameBtn) {
@@ -3213,31 +3246,21 @@ class VocabularyQuiz {
     async saveToLeaderboard() {
         console.log('saveToLeaderboard function called!');
         
-        if (!this.nicknameInput) {
-            alert('닉네임 입력 필드를 찾을 수 없습니다.');
-            return;
-        }
-        
-        const nickname = this.nicknameInput.value.trim();
-        
-        if (!nickname || nickname.length < 2) {
-            alert('닉네임은 2자 이상 입력해주세요.');
-            return;
-        }
-
-        if (nickname.length > 10) {
-            alert('닉네임은 10자 이하로 입력해주세요.');
-            return;
-        }
-
         if (!window.leaderboardManager) {
             alert('리더보드 시스템이 초기화되지 않았습니다.');
             return;
         }
+
+        // Use current logged-in user's nickname
+        const currentUser = this.currentUser;
+        if (!currentUser || !currentUser.nickname) {
+            alert('로그인된 사용자 정보를 찾을 수 없습니다.');
+            return;
+        }
         
         try {
-            // Set user nickname
-            window.leaderboardManager.setUser(nickname);
+            // Set user nickname from current logged-in user
+            window.leaderboardManager.setUser(currentUser.nickname);
             
             // Prepare score data from current quiz results
             const finalScore = document.getElementById('finalScore')?.textContent || '0';
@@ -3268,8 +3291,6 @@ class VocabularyQuiz {
             
             const result = await Promise.race([savePromise, timeoutPromise]);
             
-            this.hideNicknameModal();
-            
             if (result.success) {
                 if (result.online) {
                     alert('🎉 점수가 온라인 리더보드에 저장되었습니다!');
@@ -3282,7 +3303,6 @@ class VocabularyQuiz {
             }
         } catch (error) {
             console.error('Error saving to leaderboard:', error);
-            this.hideNicknameModal();
             alert('점수 저장 중 오류가 발생했습니다.');
         }
     }
@@ -3344,6 +3364,10 @@ class VocabularyQuiz {
                 // Load appropriate data
                 if (targetTab === 'global') {
                     this.loadLeaderboardData();
+                } else if (targetTab === 'total') {
+                    this.loadTotalRankingData();
+                } else if (targetTab === 'theme') {
+                    this.loadThemeRankingData();
                 } else if (targetTab === 'personal') {
                     this.loadPersonalStats();
                 }
@@ -3501,6 +3525,116 @@ class VocabularyQuiz {
                         <div class="leaderboard-stats">${recentTheme} • ${correctAnswers}/${totalQuestions} • ${playTime}</div>
                     </div>
                     <div class="leaderboard-score">${entry.bestScore}점</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 통합 랭킹 데이터 로드
+    async loadTotalRankingData() {
+        try {
+            const totalRanking = await window.leaderboardManager.getTotalRanking(10);
+            this.displayTotalRanking(totalRanking);
+        } catch (error) {
+            console.error('Failed to load total ranking:', error);
+        }
+    }
+
+    // 통합 랭킹 표시
+    displayTotalRanking(ranking) {
+        const totalRankingDiv = document.getElementById('totalRankingLeaderboard');
+        if (!totalRankingDiv) return;
+        
+        if (ranking.length === 0) {
+            totalRankingDiv.innerHTML = '<div class="loading">아직 등록된 점수가 없습니다.</div>';
+            return;
+        }
+        
+        totalRankingDiv.innerHTML = ranking.map((entry, index) => {
+            const rank = index + 1;
+            const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+            
+            return `
+                <div class="leaderboard-item ${rankClass}">
+                    <div class="rank">${rank}</div>
+                    <div class="player-info">
+                        <div class="nickname">${entry.nickname}</div>
+                        <div class="details">
+                            총 점수: ${entry.totalScore}점 | 
+                            완료 테마: ${entry.themesCompleted}개 | 
+                            게임 수: ${entry.totalGames}회
+                        </div>
+                    </div>
+                    <div class="score">${entry.totalScore}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 테마별 랭킹 데이터 로드
+    async loadThemeRankingData() {
+        // 테마 선택 드롭다운 이벤트 리스너 추가
+        const themeSelect = document.getElementById('themeSelectDropdown');
+        if (themeSelect && !themeSelect.hasListener) {
+            themeSelect.addEventListener('change', async (e) => {
+                const selectedTheme = e.target.value;
+                if (selectedTheme) {
+                    try {
+                        const themeRanking = await window.leaderboardManager.getThemeLeaderboard(selectedTheme, 10);
+                        this.displayThemeRanking(themeRanking, selectedTheme);
+                    } catch (error) {
+                        console.error('Failed to load theme ranking:', error);
+                    }
+                } else {
+                    const themeLeaderboardDiv = document.getElementById('themeLeaderboard');
+                    if (themeLeaderboardDiv) {
+                        themeLeaderboardDiv.innerHTML = '<div class="placeholder">테마를 선택하여 순위를 확인하세요</div>';
+                    }
+                }
+            });
+            themeSelect.hasListener = true;
+        }
+    }
+
+    // 테마별 랭킹 표시
+    displayThemeRanking(ranking, themeName) {
+        const themeLeaderboardDiv = document.getElementById('themeLeaderboard');
+        if (!themeLeaderboardDiv) return;
+        
+        const themeNames = {
+            'business': '비즈니스 영어',
+            'science': '과학 기술',
+            'travel': '여행 회화',
+            'daily': '일상 생활',
+            'education': '교육 학습',
+            'technology': 'IT 기술',
+            'medical': '의료 건강',
+            'legal': '법률 용어',
+            'cooking': '요리 음식',
+            'sports': '스포츠 운동'
+        };
+        
+        if (ranking.length === 0) {
+            themeLeaderboardDiv.innerHTML = `<div class="loading">${themeNames[themeName] || themeName} 테마에 아직 등록된 점수가 없습니다.</div>`;
+            return;
+        }
+        
+        themeLeaderboardDiv.innerHTML = ranking.map((entry, index) => {
+            const rank = index + 1;
+            const rankClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : '';
+            
+            return `
+                <div class="leaderboard-item ${rankClass}">
+                    <div class="rank">${rank}</div>
+                    <div class="player-info">
+                        <div class="nickname">${entry.nickname}</div>
+                        <div class="details">
+                            ${themeNames[themeName] || themeName} | 
+                            ${entry.timesPlayed ? `${entry.timesPlayed}회 플레이` : ''} 
+                            ${entry.lastAccuracy ? `| 정확도: ${entry.lastAccuracy}%` : ''}
+                        </div>
+                    </div>
+                    <div class="score">${entry.score}</div>
                 </div>
             `;
         }).join('');

@@ -223,6 +223,158 @@ class LeaderboardManager {
     isConnected() {
         return this.isOnline;
     }
+
+    // 테마별 리더보드 가져오기
+    async getThemeLeaderboard(themeName, limit = 10) {
+        if (this.isOnline && isFirebaseReady()) {
+            try {
+                return await this.getFirebaseThemeLeaderboard(themeName, limit);
+            } catch (error) {
+                console.warn('Failed to load Firebase theme leaderboard:', error);
+            }
+        }
+        
+        // 오프라인 모드: 로컬 데이터 사용
+        return this.getLocalThemeLeaderboard(themeName, limit);
+    }
+
+    // Firebase에서 테마별 리더보드 가져오기
+    async getFirebaseThemeLeaderboard(themeName, limit) {
+        const db = getDatabase();
+        const snapshot = await db.ref('leaderboard').once('value');
+        
+        const data = snapshot.val() || {};
+        const themeRankings = [];
+
+        Object.values(data).forEach(user => {
+            if (user.themes && user.themes[themeName]) {
+                themeRankings.push({
+                    nickname: user.nickname,
+                    score: user.themes[themeName].bestScore,
+                    timesPlayed: user.themes[themeName].timesPlayed,
+                    lastAccuracy: user.themes[themeName].lastAccuracy || 0
+                });
+            }
+        });
+
+        return themeRankings
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit);
+    }
+
+    // 로컬에서 테마별 리더보드 가져오기
+    getLocalThemeLeaderboard(themeName, limit) {
+        const localScores = JSON.parse(localStorage.getItem('localScores') || '[]');
+        
+        // 테마별 사용자 최고 점수 추출
+        const themeScores = {};
+        localScores.forEach(record => {
+            if (record.theme === themeName) {
+                if (!themeScores[record.userId] || themeScores[record.userId].score < record.score) {
+                    themeScores[record.userId] = {
+                        nickname: record.nickname,
+                        score: record.score,
+                        accuracy: record.accuracy,
+                        completedAt: record.completedAt
+                    };
+                }
+            }
+        });
+
+        return Object.values(themeScores)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit);
+    }
+
+    // 통합 랭킹 가져오기 (모든 테마 점수 합산)
+    async getTotalRanking(limit = 10) {
+        if (this.isOnline && isFirebaseReady()) {
+            try {
+                return await this.getFirebaseTotalRanking(limit);
+            } catch (error) {
+                console.warn('Failed to load Firebase total ranking:', error);
+            }
+        }
+        
+        // 오프라인 모드: 로컬 데이터 사용
+        return this.getLocalTotalRanking(limit);
+    }
+
+    // Firebase에서 통합 랭킹 가져오기
+    async getFirebaseTotalRanking(limit) {
+        const db = getDatabase();
+        const snapshot = await db.ref('leaderboard').once('value');
+        
+        const data = snapshot.val() || {};
+        const totalRankings = [];
+
+        Object.values(data).forEach(user => {
+            let totalScore = 0;
+            let totalGames = user.totalGames || 0;
+            let themesCompleted = 0;
+
+            if (user.themes) {
+                Object.values(user.themes).forEach(theme => {
+                    totalScore += theme.bestScore || 0;
+                    if (theme.bestScore > 0) themesCompleted++;
+                });
+            }
+
+            totalRankings.push({
+                nickname: user.nickname,
+                totalScore: totalScore,
+                totalGames: totalGames,
+                themesCompleted: themesCompleted,
+                averageScore: totalGames > 0 ? Math.round(totalScore / totalGames) : 0
+            });
+        });
+
+        return totalRankings
+            .sort((a, b) => b.totalScore - a.totalScore)
+            .slice(0, limit);
+    }
+
+    // 로컬에서 통합 랭킹 가져오기
+    getLocalTotalRanking(limit) {
+        const localScores = JSON.parse(localStorage.getItem('localScores') || '[]');
+        
+        // 사용자별 테마별 최고 점수 집계
+        const userTotalScores = {};
+        localScores.forEach(record => {
+            if (!userTotalScores[record.userId]) {
+                userTotalScores[record.userId] = {
+                    nickname: record.nickname,
+                    themes: {},
+                    totalScore: 0,
+                    totalGames: 0
+                };
+            }
+
+            const userRecord = userTotalScores[record.userId];
+            
+            // 테마별 최고 점수만 유지
+            if (!userRecord.themes[record.theme] || userRecord.themes[record.theme] < record.score) {
+                if (userRecord.themes[record.theme]) {
+                    userRecord.totalScore -= userRecord.themes[record.theme];
+                }
+                userRecord.themes[record.theme] = record.score;
+                userRecord.totalScore += record.score;
+            }
+            
+            userRecord.totalGames++;
+        });
+
+        return Object.values(userTotalScores)
+            .map(user => ({
+                nickname: user.nickname,
+                totalScore: user.totalScore,
+                totalGames: user.totalGames,
+                themesCompleted: Object.keys(user.themes).length,
+                averageScore: user.totalGames > 0 ? Math.round(user.totalScore / user.totalGames) : 0
+            }))
+            .sort((a, b) => b.totalScore - a.totalScore)
+            .slice(0, limit);
+    }
 }
 
 // 전역 리더보드 매니저 인스턴스
