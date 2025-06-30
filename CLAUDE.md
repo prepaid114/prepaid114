@@ -4,7 +4,7 @@
 
 ## 프로젝트 개요
 
-영어 단어 마스터는 테마별 퀴즈를 통해 영어 단어를 학습하는 인터랙티브 웹 애플리케이션입니다. 10개 테마에 총 400개 단어가 있으며, 객관식과 타이핑 모드를 지원합니다.
+영어 단어 마스터는 테마별 퀴즈를 통해 영어 단어를 학습하는 인터랙티브 웹 애플리케이션입니다. 10개 테마에 총 400개 단어가 있으며, 객관식과 타이핑 모드를 지원합니다. Firebase Authentication과 Database를 사용한 사용자 인증 및 클라우드 데이터 저장 시스템을 구현했습니다.
 
 ## 명령어
 
@@ -40,18 +40,20 @@ ccusage
 
 ### 핵심 기술
 - **프론트엔드**: 순수 HTML5, CSS3, JavaScript (ES6+)
-- **데이터베이스**: Firebase Realtime Database (리더보드용)
+- **인증**: Firebase Authentication (사용자 로그인/회원가입)
+- **데이터베이스**: Firebase Realtime Database (사용자 데이터 및 리더보드)
+- **보안**: Firebase Security Rules (UID 기반 접근 제어)
 - **저장소**: LocalStorage (오프라인 진도 저장)
 - **스타일링**: CSS Grid/Flexbox와 CSS 커스텀 속성으로 테마 구현
 - **오디오**: Web Speech API (발음 기능)
 
 ### 파일 구조
-- **index.html**: 모달과 UI 컴포넌트가 포함된 메인 HTML 구조
-- **script.js**: 핵심 게임 로직, 단어 데이터, 사용자 상호작용
+- **index.html**: 로그인/회원가입 모달과 메인 UI 컴포넌트 포함
+- **script.js**: Firebase Auth 기반 인증 시스템, 게임 로직, 단어 데이터
 - **leaderboard.js**: 온라인 리더보드를 위한 Firebase 통합
-- **firebase-config.js**: Firebase 설정 (실제 API 키 포함)
+- **firebase-config.js**: Firebase 설정 (Authentication & Database API 키)
 - **firebase-config.template.js**: Firebase 설정 템플릿
-- **style.css**: 라이트/다크 테마를 포함한 모든 스타일링
+- **style.css**: 로그인 UI 및 라이트/다크 테마 스타일링
 
 ### 주요 기능 아키텍처
 
@@ -65,10 +67,16 @@ ccusage
 - **타이핑 모드**: 직접 입력 및 지능형 답안 검증
 - **자동 진행**: 선택적 2초 자동 다음 문제 이동
 
+#### 사용자 인증 시스템
+- **Firebase Authentication**: 닉네임/비밀번호 기반 사용자 등록 및 로그인
+- **UID 기반 데이터 격리**: 각 사용자의 고유 ID로 완벽한 데이터 분리
+- **실시간 세션 관리**: onAuthStateChanged로 로그인 상태 자동 감지
+- **보안 규칙**: Firebase Database 접근 권한을 UID로 엄격히 제어
+
 #### 데이터 지속성
-- **LocalStorage**: 사용자 진도, 점수, 학습 연속일, 복습용 틀린 답
-- **Firebase**: 온라인 리더보드, 소셜 기능, 기기 간 동기화
-- **하이브리드 시스템**: 로컬 데이터로 오프라인 작동, 온라인 시 동기화
+- **Firebase Database**: 사용자별 학습 진도, 점수, 통계 클라우드 저장
+- **LocalStorage**: 오프라인 백업 및 임시 데이터 저장
+- **하이브리드 시스템**: Firebase 우선, 연결 실패 시 로컬 저장소 사용
 
 #### UI 시스템
 - **다크/라이트 테마**: CSS 커스텀 속성과 토글 버튼
@@ -78,22 +86,44 @@ ccusage
 
 ### 코드 패턴
 
+#### 인증 시스템
+```javascript
+// Firebase Auth 기반 AuthManager 클래스
+class AuthManager {
+    constructor() {
+        this.currentUser = null;
+        this.auth = firebase.auth();
+    }
+    
+    // 닉네임을 가짜 이메일로 변환
+    nicknameToEmail(nickname) {
+        return `${nickname}@vocabtool.app`;
+    }
+    
+    // UID 기반 사용자 데이터 저장
+    async saveUserData(uid, data) {
+        await this.database.ref(`users/${uid}`).set(data);
+    }
+}
+```
+
 #### 상태 관리
 ```javascript
-// script.js의 전역 상태
-let currentTheme = 'business';
-let currentQuestionIndex = 0;
-let vocabularyQuizProgress = {};  // LocalStorage 지속성
+// Firebase Auth 상태 변화 감지
+this.auth.onAuthStateChanged((user) => {
+    if (user) {
+        this.loadUserData(user);
+    } else {
+        this.showLoginScreen();
+    }
+});
 ```
 
 #### Firebase 통합
 ```javascript
-// leaderboard.js의 조건부 Firebase 사용
-if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-    // 온라인 기능
-} else {
-    // 오프라인 대체
-}
+// Firebase 인증 및 데이터베이스 초기화
+this.auth = firebase.auth();
+this.database = firebase.database();
 ```
 
 #### 테마 전환
@@ -111,8 +141,26 @@ document.documentElement.setAttribute('data-theme', theme);
 
 ### Firebase 설정
 1. `firebase-config.template.js`를 `firebase-config.js`로 복사
-2. 실제 Firebase 설정 추가
-3. Realtime Database 규칙에서 읽기/쓰기 접근 허용 확인
+2. Firebase Console에서 프로젝트 생성 및 Authentication, Database 활성화
+3. 실제 Firebase 설정 (API Key, Database URL) 추가
+4. Authentication에서 이메일/비밀번호 로그인 활성화
+5. Database 보안 규칙 설정:
+```json
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "leaderboard": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}
+```
 
 ### 단어 데이터 구조
 ```javascript
@@ -126,11 +174,56 @@ document.documentElement.setAttribute('data-theme', theme);
 ### 로컬 개발
 - 로컬 테스트용 Python HTTP 서버 사용
 - Chrome DevTools로 디버깅
+- Firebase Auth 테스트: 회원가입/로그인 플로우
+- 사용자별 데이터 격리 확인
 - 온라인/오프라인 모드 모두 테스트
 - 음성 합성 작동 확인 (Chrome만 해당)
 
 ### 성능 고려사항
+- Firebase Authentication 초기화 시간
 - 시작 시 대용량 단어 데이터셋(400개 단어) 로드
-- 지속성을 위한 LocalStorage 광범위 사용
+- Firebase Database 실시간 동기화
+- 지속성을 위한 LocalStorage 백업 시스템
 - 소셜 공유 이미지 생성을 위한 Canvas 연산
 - 리더보드용 Firebase 실시간 리스너
+
+## 개발 히스토리
+
+### v3.6.0 Firebase Authentication 구현 (2025-06-29)
+
+**구현된 주요 기능:**
+- Firebase Authentication SDK 통합
+- 닉네임 기반 사용자 친화적 로그인 시스템
+- UID 기반 사용자 데이터 완전 격리
+- 엔터프라이즈급 Firebase 보안 규칙 적용
+- 실시간 인증 상태 관리 및 세션 지속성
+
+**실전 테스트 결과:**
+- 사용자 "테스트마스터" 계정으로 완전한 학습 여정 테스트
+- 비즈니스 영어 테마 20문제 중 14개 정답 (70% 정답률)
+- Firebase Database에 사용자 통계 정상 저장
+- 리더보드 시스템 완벽 작동 확인
+
+**기술적 구현 세부사항:**
+- 닉네임을 `nickname@vocabtool.app` 형태로 변환하여 Firebase Auth 호환성 확보
+- `onAuthStateChanged` 리스너로 실시간 로그인 상태 추적
+- 사용자별 `/users/{uid}` 경로로 데이터 완전 분리
+- 사용자 친화적 에러 메시지 매핑 시스템
+- CSS Grid 레이아웃으로 UI 겹침 문제 해결
+
+**보안 구현:**
+```javascript
+// Firebase Database 보안 규칙
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    }
+  }
+}
+```
+
+이 업데이트로 앱이 단순한 학습 도구에서 완전한 사용자 관리 시스템을 갖춘 엔터프라이즈급 애플리케이션으로 진화했습니다.

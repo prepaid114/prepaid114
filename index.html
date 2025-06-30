@@ -9,13 +9,73 @@
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
-    <div class="container">
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🎯 영어 단어 마스터</h1>
+                <p>로그인하여 학습을 시작하세요</p>
+            </div>
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="loginNickname">닉네임</label>
+                    <input type="text" id="loginNickname" placeholder="닉네임을 입력하세요" maxlength="20" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">비밀번호</label>
+                    <input type="password" id="loginPassword" placeholder="비밀번호를 입력하세요" required>
+                </div>
+                <div class="login-buttons">
+                    <button id="loginBtn" class="login-btn primary">로그인</button>
+                    <button id="registerBtn" class="login-btn secondary">회원가입</button>
+                </div>
+                <div id="loginError" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-overlay" id="registerModal" style="display: none;">
+        <div class="modal-content">
+            <div class="register-header">
+                <h2>🎯 회원가입</h2>
+                <p>새로운 계정을 만들어 학습을 시작하세요!</p>
+            </div>
+            <div class="register-form">
+                <div class="input-group">
+                    <label for="registerNickname">닉네임</label>
+                    <input type="text" id="registerNickname" placeholder="2-20자 영문, 한글, 숫자" maxlength="20" minlength="2" required>
+                    <small class="input-help">다른 사용자들에게 표시될 이름입니다</small>
+                </div>
+                <div class="input-group">
+                    <label for="registerPassword">비밀번호</label>
+                    <input type="password" id="registerPassword" placeholder="6자 이상 입력하세요" required>
+                </div>
+                <div class="input-group">
+                    <label for="confirmPassword">비밀번호 확인</label>
+                    <input type="password" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
+                </div>
+            </div>
+            <div id="registerError" class="error-message" style="display: none;"></div>
+            <div class="register-actions">
+                <button id="cancelRegisterBtn" class="action-btn secondary">취소</button>
+                <button id="confirmRegisterBtn" class="action-btn primary">가입하기</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
         <header class="header">
             <div class="header-top">
                 <h1>🎯 영어 단어 마스터</h1>
+                <div class="user-info">
+                    <span class="username" id="currentUser">사용자</span>
+                    <button class="logout-btn" id="logoutBtn">로그아웃</button>
+                </div>
                 <button class="theme-toggle-btn" id="themeToggle">
                     <span class="theme-icon">🌙</span>
                 </button>

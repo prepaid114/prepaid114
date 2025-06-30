@@ -1,3 +1,706 @@
+// Firebase Auth-based User Authentication and Session Management
+class AuthManager {
+    constructor() {
+        this.currentUser = null;
+        this.database = null;
+        this.auth = null;
+        this.isInitialized = false;
+        this.firebaseReady = false;
+    }
+
+    // Initialize authentication system
+    async initialize() {
+        try {
+            // Wait for Firebase to be initialized
+            if (typeof initializeFirebase === 'function') {
+                this.firebaseReady = await initializeFirebase();
+            } else {
+                console.warn('Firebase initialization function not found');
+            }
+            
+            if (this.firebaseReady) {
+                if (typeof getDatabase === 'function') {
+                    this.database = getDatabase();
+                }
+                
+                // Initialize Firebase Auth
+                this.auth = firebase.auth();
+                console.log('Firebase Auth initialized');
+                
+                // Listen for auth state changes
+                this.auth.onAuthStateChanged((user) => {
+                    this.handleAuthStateChange(user);
+                });
+            } else {
+                console.warn('Running in offline mode - user data will be saved locally');
+                this.firebaseReady = false;
+                this.showLoginScreen();
+            }
+            
+            this.setupEventListeners();
+            this.isInitialized = true;
+            console.log('AuthManager initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize AuthManager:', error);
+            this.showLoginScreen();
+        }
+    }
+
+    // Handle Firebase Auth state changes
+    handleAuthStateChange(user) {
+        if (user) {
+            // User is signed in
+            console.log('User signed in:', user.email);
+            this.loadUserData(user);
+        } else {
+            // User is signed out
+            console.log('User signed out');
+            this.currentUser = null;
+            this.showLoginScreen();
+        }
+    }
+
+    // Load user data from database
+    async loadUserData(authUser) {
+        try {
+            if (!this.database) {
+                console.warn('Database not available');
+                return;
+            }
+
+            const userRef = this.database.ref(`users/${authUser.uid}`);
+            const snapshot = await userRef.once('value');
+            
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                this.currentUser = {
+                    uid: authUser.uid,
+                    email: authUser.email,
+                    nickname: userData.nickname,
+                    createdAt: userData.createdAt,
+                    stats: userData.stats || {}
+                };
+            } else {
+                // First time user - create profile
+                const displayNickname = this.emailToNickname(authUser.email);
+                this.currentUser = {
+                    uid: authUser.uid,
+                    email: authUser.email,
+                    nickname: displayNickname,
+                    createdAt: Date.now(),
+                    stats: {
+                        totalGames: 0,
+                        totalScore: 0,
+                        bestScore: 0,
+                        themes: {}
+                    }
+                };
+                
+                // Save initial user data
+                await userRef.set({
+                    nickname: this.currentUser.nickname,
+                    email: this.currentUser.email,
+                    createdAt: this.currentUser.createdAt,
+                    stats: this.currentUser.stats
+                });
+            }
+            
+            this.updateUserDisplay(this.currentUser.nickname);
+            this.showMainApp();
+            
+            // Initialize the main app
+            if (window.initializeApp) {
+                setTimeout(() => window.initializeApp(), 100);
+            }
+            
+        } catch (error) {
+            console.error('Error loading user data:', error);
+        }
+    }
+
+    // Setup event listeners for login/register forms
+    setupEventListeners() {
+        // Login button
+        document.getElementById('loginBtn')?.addEventListener('click', () => {
+            this.handleLogin();
+        });
+
+        // Register button
+        document.getElementById('registerBtn')?.addEventListener('click', () => {
+            this.showRegisterModal();
+        });
+
+        // Register form buttons
+        document.getElementById('confirmRegisterBtn')?.addEventListener('click', () => {
+            this.handleRegister();
+        });
+
+        document.getElementById('cancelRegisterBtn')?.addEventListener('click', () => {
+            this.hideRegisterModal();
+        });
+
+        // Logout button
+        document.getElementById('logoutBtn')?.addEventListener('click', () => {
+            this.handleLogout();
+        });
+
+        // Enter key handling
+        document.getElementById('loginPassword')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.handleLogin();
+        });
+
+        document.getElementById('confirmPassword')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.handleRegister();
+        });
+    }
+
+    // Show login screen
+    showLoginScreen() {
+        document.getElementById('loginContainer').style.display = 'flex';
+        document.getElementById('mainContainer').style.display = 'none';
+    }
+
+    // Show main app
+    showMainApp() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'block';
+    }
+
+    // Show register modal
+    showRegisterModal() {
+        document.getElementById('registerModal').style.display = 'flex';
+        this.clearRegisterForm();
+        this.hideError('registerError');
+    }
+
+    // Hide register modal
+    hideRegisterModal() {
+        document.getElementById('registerModal').style.display = 'none';
+        this.clearRegisterForm();
+    }
+
+    // Handle user login
+    async handleLogin() {
+        const nickname = document.getElementById('loginNickname').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        this.hideError('loginError');
+
+        if (!nickname || !password) {
+            this.showError('loginError', '닉네임과 비밀번호를 모두 입력해주세요.');
+            return;
+        }
+
+        if (!this.isValidNickname(nickname)) {
+            this.showError('loginError', '닉네임은 2-20자 영문, 한글, 숫자만 사용 가능합니다.');
+            return;
+        }
+
+        try {
+            if (!this.firebaseReady || !this.auth) {
+                this.showError('loginError', '서버 연결에 문제가 있습니다. 잠시 후 다시 시도해주세요.');
+                return;
+            }
+
+            // 닉네임을 가짜 이메일로 변환
+            const email = this.nicknameToEmail(nickname);
+            console.log('Attempting login with fake email:', email);
+
+            await this.auth.signInWithEmailAndPassword(email, password);
+            this.clearLoginForm();
+            // Auth state change will handle the rest
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            let errorMessage = '로그인 중 오류가 발생했습니다.';
+            
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    errorMessage = '등록되지 않은 닉네임입니다.';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = '비밀번호가 올바르지 않습니다.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = '올바른 닉네임 형식을 입력해주세요.';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage = '너무 많은 시도로 인해 일시적으로 차단되었습니다. 잠시 후 다시 시도해주세요.';
+                    break;
+                case 'auth/network-request-failed':
+                    errorMessage = '네트워크 연결을 확인해주세요.';
+                    break;
+                case 'auth/invalid-credential':
+                    errorMessage = '닉네임 또는 비밀번호가 올바르지 않습니다.';
+                    break;
+                default:
+                    // Firebase 오류 메시지 숨기고 사용자 친화적 메시지 표시
+                    if (error.message.includes('user-not-found') || error.message.includes('invalid-credential')) {
+                        errorMessage = '등록되지 않은 닉네임이거나 비밀번호가 올바르지 않습니다.';
+                    } else if (error.message.includes('wrong-password')) {
+                        errorMessage = '비밀번호가 올바르지 않습니다.';
+                    } else {
+                        errorMessage = '로그인에 실패했습니다. 닉네임과 비밀번호를 확인해주세요.';
+                    }
+            }
+            
+            this.showError('loginError', errorMessage);
+        }
+    }
+
+    // Handle user registration
+    async handleRegister() {
+        const nickname = document.getElementById('registerNickname').value.trim();
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        this.hideError('registerError');
+
+        // Validation
+        if (!nickname || !password || !confirmPassword) {
+            this.showError('registerError', '모든 필드를 입력해주세요.');
+            return;
+        }
+
+        if (!this.isValidNickname(nickname)) {
+            this.showError('registerError', '닉네임은 2-20자 영문, 한글, 숫자만 사용 가능합니다.');
+            return;
+        }
+
+        if (password.length < 6) {
+            this.showError('registerError', '비밀번호는 6자 이상 입력해주세요.');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            this.showError('registerError', '비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        try {
+            if (!this.firebaseReady || !this.auth) {
+                this.showError('registerError', '서버 연결에 문제가 있습니다. 잠시 후 다시 시도해주세요.');
+                return;
+            }
+
+            console.log('Starting registration process for nickname:', nickname);
+            
+            // 닉네임을 가짜 이메일로 변환
+            const email = this.nicknameToEmail(nickname);
+            console.log('Converting to fake email:', email);
+            
+            // Create new user with Firebase Auth
+            const userCredential = await this.auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+            
+            console.log('User created successfully:', user.uid);
+            
+            this.hideRegisterModal();
+            this.showToast('회원가입이 완료되었습니다! 자동으로 로그인됩니다.');
+            
+            // Auth state change will handle login automatically
+
+        } catch (error) {
+            console.error('Registration error:', error);
+            let errorMessage = '회원가입 중 오류가 발생했습니다.';
+            
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage = '이미 사용 중인 닉네임입니다.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = '올바른 닉네임 형식을 입력해주세요.';
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = '비밀번호가 너무 약합니다. 6자 이상 입력해주세요.';
+                    break;
+                case 'auth/network-request-failed':
+                    errorMessage = '네트워크 연결을 확인해주세요.';
+                    break;
+                default:
+                    // Firebase 오류 메시지 숨기고 사용자 친화적 메시지 표시
+                    if (error.message.includes('email-already-in-use')) {
+                        errorMessage = '이미 사용 중인 닉네임입니다.';
+                    } else if (error.message.includes('weak-password')) {
+                        errorMessage = '비밀번호가 너무 약합니다. 6자 이상 입력해주세요.';
+                    } else {
+                        errorMessage = '회원가입에 실패했습니다. 입력 정보를 확인해주세요.';
+                    }
+            }
+            
+            this.showError('registerError', errorMessage);
+        }
+    }
+
+    // Authenticate user credentials
+    async authenticateUser(nickname, password) {
+        if (!this.firebaseReady || !this.database) {
+            // Offline mode - use localStorage for testing
+            const users = JSON.parse(localStorage.getItem('offlineUsers') || '{}');
+            const userData = users[this.sanitizeKey(nickname)];
+            
+            if (userData && userData.password === this.hashPassword(password)) {
+                return {
+                    nickname: userData.nickname,
+                    createdAt: userData.createdAt,
+                    stats: userData.stats || {}
+                };
+            }
+            return null;
+        }
+        
+        try {
+            const snapshot = await this.database.ref(`users/${this.sanitizeKey(nickname)}`).once('value');
+            const userData = snapshot.val();
+            
+            if (userData && userData.password === this.hashPassword(password)) {
+                return {
+                    nickname: userData.nickname,
+                    createdAt: userData.createdAt,
+                    stats: userData.stats || {}
+                };
+            }
+            return null;
+        } catch (error) {
+            console.error('Authentication error:', error);
+            throw error;
+        }
+    }
+
+    // Check if nickname already exists
+    async checkNicknameExists(nickname) {
+        if (!this.firebaseReady || !this.database) {
+            // Offline mode
+            const users = JSON.parse(localStorage.getItem('offlineUsers') || '{}');
+            return users.hasOwnProperty(this.sanitizeKey(nickname));
+        }
+        
+        try {
+            const snapshot = await this.database.ref(`users/${this.sanitizeKey(nickname)}`).once('value');
+            return snapshot.exists();
+        } catch (error) {
+            console.warn('Firebase permission error, switching to offline mode:', error);
+            // Switch to offline mode on permission error
+            this.firebaseReady = false;
+            this.database = null;
+            
+            // Check in offline storage
+            const users = JSON.parse(localStorage.getItem('offlineUsers') || '{}');
+            return users.hasOwnProperty(this.sanitizeKey(nickname));
+        }
+    }
+
+    // Create new user account
+    async createUser(nickname, password) {
+        const userData = {
+            nickname: nickname,
+            password: this.hashPassword(password),
+            createdAt: Date.now(),
+            stats: {
+                totalGames: 0,
+                totalScore: 0,
+                bestScore: 0,
+                themes: {}
+            }
+        };
+
+        if (!this.firebaseReady || !this.database) {
+            // Offline mode
+            const users = JSON.parse(localStorage.getItem('offlineUsers') || '{}');
+            users[this.sanitizeKey(nickname)] = userData;
+            localStorage.setItem('offlineUsers', JSON.stringify(users));
+            console.log('User created successfully in offline mode:', nickname);
+            return;
+        }
+
+        try {
+            await this.database.ref(`users/${this.sanitizeKey(nickname)}`).set(userData);
+            console.log('User created successfully:', nickname);
+        } catch (error) {
+            console.error('Create user error:', error);
+            throw error;
+        }
+    }
+
+    // Login user and save session
+    async loginUser(user) {
+        this.currentUser = user;
+        await this.saveSession(user);
+        this.updateUserDisplay(user.nickname);
+        console.log('User logged in:', user.nickname);
+    }
+
+    // Handle user logout
+    async handleLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            try {
+                if (this.auth) {
+                    await this.auth.signOut();
+                } else {
+                    // Fallback for offline mode
+                    this.currentUser = null;
+                    this.showLoginScreen();
+                    this.clearLoginForm();
+                }
+                console.log('User logged out');
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+    }
+
+    // Nickname to fake email conversion
+    nicknameToEmail(nickname) {
+        // 특수문자 제거 및 안전한 문자로 변환
+        const cleanNickname = nickname
+            .replace(/[^a-zA-Z0-9가-힣]/g, '')
+            .toLowerCase();
+        return `${cleanNickname}@vocabtool.app`;
+    }
+
+    // Fake email to nickname conversion
+    emailToNickname(email) {
+        if (email && email.includes('@vocabtool.app')) {
+            return email.split('@')[0];
+        }
+        return email; // 실제 이메일인 경우 그대로 반환
+    }
+
+    // Nickname validation helper
+    isValidNickname(nickname) {
+        return nickname && 
+               nickname.length >= 2 && 
+               nickname.length <= 20 &&
+               /^[a-zA-Z0-9가-힣]+$/.test(nickname);
+    }
+
+    // Save user session to localStorage
+    async saveSession(user) {
+        try {
+            localStorage.setItem('currentUser', JSON.stringify({
+                nickname: user.nickname,
+                loginTime: Date.now()
+            }));
+        } catch (error) {
+            console.error('Save session error:', error);
+        }
+    }
+
+    // Load user session from localStorage
+    async loadSession() {
+        try {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                // Check if session is still valid (24 hours)
+                const sessionAge = Date.now() - userData.loginTime;
+                const maxSessionAge = 24 * 60 * 60 * 1000; // 24 hours
+
+                if (sessionAge < maxSessionAge) {
+                    let dbUser = null;
+                    
+                    if (this.firebaseReady && this.database) {
+                        // Try to get user from Firebase
+                        try {
+                            const snapshot = await this.database.ref(`users/${this.sanitizeKey(userData.nickname)}`).once('value');
+                            if (snapshot.exists()) {
+                                dbUser = snapshot.val();
+                            }
+                        } catch (error) {
+                            console.warn('Failed to load user from Firebase:', error);
+                        }
+                    }
+                    
+                    if (!dbUser) {
+                        // Try offline mode
+                        const users = JSON.parse(localStorage.getItem('offlineUsers') || '{}');
+                        dbUser = users[this.sanitizeKey(userData.nickname)];
+                    }
+                    
+                    if (dbUser) {
+                        this.currentUser = {
+                            nickname: dbUser.nickname,
+                            createdAt: dbUser.createdAt,
+                            stats: dbUser.stats || {}
+                        };
+                        this.updateUserDisplay(this.currentUser.nickname);
+                        this.showMainApp();
+                        
+                        // Initialize the main app
+                        if (window.initializeApp) {
+                            setTimeout(() => window.initializeApp(), 100);
+                        }
+                        return;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Load session error:', error);
+        }
+    }
+
+    // Clear user session
+    async clearSession() {
+        try {
+            localStorage.removeItem('currentUser');
+        } catch (error) {
+            console.error('Clear session error:', error);
+        }
+    }
+
+    // Update user display in header
+    updateUserDisplay(nickname) {
+        const userElement = document.getElementById('currentUser');
+        if (userElement) {
+            userElement.textContent = nickname;
+        }
+    }
+
+    // Save user game result
+    async saveGameResult(themeName, score, accuracy, totalQuestions) {
+        if (!this.currentUser) return;
+
+        const currentStats = this.currentUser.stats || {};
+
+        // Update overall stats
+        const newStats = {
+            totalGames: (currentStats.totalGames || 0) + 1,
+            totalScore: (currentStats.totalScore || 0) + score,
+            bestScore: Math.max((currentStats.bestScore || 0), score),
+            themes: currentStats.themes || {}
+        };
+
+        // Update theme-specific stats
+        if (!newStats.themes[themeName]) {
+            newStats.themes[themeName] = {
+                gamesPlayed: 0,
+                totalScore: 0,
+                bestScore: 0,
+                totalQuestions: 0,
+                correctAnswers: 0
+            };
+        }
+
+        const themeStats = newStats.themes[themeName];
+        themeStats.gamesPlayed += 1;
+        themeStats.totalScore += score;
+        themeStats.bestScore = Math.max(themeStats.bestScore, score);
+        themeStats.totalQuestions += totalQuestions;
+        themeStats.correctAnswers += Math.round((accuracy / 100) * totalQuestions);
+
+        // Update current user object
+        this.currentUser.stats = newStats;
+
+        if (!this.firebaseReady || !this.database) {
+            // Offline mode - save to localStorage
+            const users = JSON.parse(localStorage.getItem('offlineUsers') || '{}');
+            if (users[this.currentUser.uid]) {
+                users[this.currentUser.uid].stats = newStats;
+                localStorage.setItem('offlineUsers', JSON.stringify(users));
+            }
+            console.log('Game result saved successfully in offline mode');
+            return;
+        }
+
+        try {
+            // Save to Firebase using UID (secure)
+            const userRef = this.database.ref(`users/${this.currentUser.uid}/stats`);
+            await userRef.set(newStats);
+            console.log('Game result saved successfully');
+        } catch (error) {
+            console.error('Save game result error:', error);
+        }
+    }
+
+    // Get user statistics
+    getUserStats() {
+        return this.currentUser?.stats || {};
+    }
+
+    // Utility functions
+    sanitizeKey(key) {
+        return key.replace(/[.#$[\]/]/g, '_');
+    }
+
+    hashPassword(password) {
+        // Simple hash function (in production, use proper encryption)
+        let hash = 0;
+        for (let i = 0; i < password.length; i++) {
+            const char = password.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        return hash.toString();
+    }
+
+    showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    }
+
+    hideError(elementId) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+    }
+
+    clearLoginForm() {
+        document.getElementById('loginNickname').value = '';
+        document.getElementById('loginPassword').value = '';
+        this.hideError('loginError');
+    }
+
+    clearRegisterForm() {
+        document.getElementById('registerNickname').value = '';
+        document.getElementById('registerPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        this.hideError('registerError');
+    }
+
+    showToast(message) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 10000;
+            font-size: 0.9rem;
+            text-align: center;
+            max-width: 90%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        `;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
+        }, 3000);
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
+    }
+
+    isLoggedIn() {
+        return this.currentUser !== null;
+    }
+}
+
+// Global auth manager instance
+let authManager;
+
 const vocabularyThemes = {
     business: {
         name: "비즈니스 영어",
@@ -2374,6 +3077,16 @@ class VocabularyQuiz {
         // Update user progress
         this.updateProgress(this.currentTheme, finalScoreValue, accuracy);
         
+        // Save game result to user's account
+        if (authManager && authManager.isLoggedIn()) {
+            authManager.saveGameResult(
+                vocabularyThemes[this.currentTheme].name,
+                finalScoreValue,
+                accuracy,
+                this.totalQuestions
+            );
+        }
+        
         // Show modal
         modal.style.display = 'flex';
         
@@ -2927,10 +3640,16 @@ function initializeThemeManager() {
     console.log('ThemeManager initialized successfully');
 }
 
-function initializeComplete() {
+async function initializeComplete() {
     initializeThemeManager();
-    initializeApp();
+    
+    // Initialize authentication system
+    authManager = new AuthManager();
+    await authManager.initialize();
 }
+
+// Make initializeApp globally available
+window.initializeApp = initializeApp;
 
 document.addEventListener('DOMContentLoaded', initializeComplete);
 
